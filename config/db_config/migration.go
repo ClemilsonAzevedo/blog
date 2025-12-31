@@ -1,4 +1,4 @@
-package repository
+package db_config
 
 import (
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"

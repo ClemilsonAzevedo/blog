@@ -13,6 +13,14 @@ type Comment struct {
 	UserID    uuid.UUID `gorm:"column:user_id;index;not null"`
 	PostID    uuid.UUID `gorm:"column:post_id;index;not null"`
 
-	User User `gorm:"foreignKey:UserID;references:ID"`
-	Post Post `gorm:"foreignKey:PostID;references:ID"`
+	User User `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
+	Post Post `gorm:"foreignKey:PostID;references:ID" json:"post,omitempty"`
+}
+
+func (Comment) TableName() string {
+	return "comments"
+}
+
+func (comment Comment) GetID() any {
+	return comment.ID
 }

@@ -6,9 +6,9 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func BindPostRoutes(uc *controller.Controller[entities.Post], c *chi.Mux) {
+func BindUserRoutes(uc *controller.Controller[entities.User], c *chi.Mux) {
 	c.Group(func(r chi.Router) {
-		r.Post("/post", uc.Create)
-		r.Get("/post/{id}", uc.GetByID)
+		r.Post("/user", uc.Create)
+		r.Get("/user/{id}", uc.GetByID)
 	})
 }

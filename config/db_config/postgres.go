@@ -1,11 +1,10 @@
-package db
+package db_config
 
 import (
 	"errors"
 	"log"
 	"os"
 
-	"github.com/clemilsonazevedo/blog/internal/repository"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,6 +26,6 @@ func NewPostgresConfig() (*gorm.DB, error) {
 	}
 
 	log.Println("DATABASE CONNECTED")
-	repository.AutoMigrate(db)
+	AutoMigrate(db)
 	return db, nil
 }

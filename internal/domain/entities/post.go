@@ -7,13 +7,21 @@ import (
 )
 
 type Post struct {
-	ID        uuid.UUID `gorm:"column:id;primaryKey;type:uuid;default:gen_random_uuid()"`
-	Title     string    `gorm:"column:title;index;not null"`
-	Content   string    `gorm:"column:content;not null"`
-	Likes     int       `gorm:"column:likes;not null;default:0"`
-	Dislikes  int       `gorm:"column:dislikes;not null;default:0"`
-	CreatedAt time.Time `gorm:"column:created_at;not null;autoCreateTime"`
-	UserID    uuid.UUID `gorm:"column:user_id;index;not null"`
+	ID        uuid.UUID `gorm:"column:id;primaryKey;type:uuid;default:gen_random_uuid()" json:"id"`
+	Title     string    `gorm:"column:title;index;not null" json:"title"`
+	Content   string    `gorm:"column:content;not null" json:"content"`
+	Likes     int       `gorm:"column:likes;not null;default:0" json:"likes"`
+	Dislikes  int       `gorm:"column:dislikes;not null;default:0" json:"dislikes"`
+	CreatedAt time.Time `gorm:"column:created_at;not null;autoCreateTime" json:"created_at"`
+	UserID    uuid.UUID `gorm:"column:user_id;index;not null" json:"user_id"`
 
-	User User `gorm:"foreignKey:UserID;references:ID"`
+	User User `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
+}
+
+func (Post) TableName() string {
+	return "posts"
+}
+
+func (post Post) GetID() any {
+	return post.ID
 }
