@@ -17,3 +17,11 @@ type Post struct {
 
 	User User `gorm:"foreignKey:UserID;references:ID"`
 }
+
+func (Post) TableName() string {
+	return "posts"
+}
+
+func (post* Post)GetID() any {
+	return post.ID
+}

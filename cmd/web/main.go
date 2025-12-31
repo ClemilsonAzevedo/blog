@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/clemilsonazevedo/blog/config/db"
-	"github.com/clemilsonazevedo/blog/internal/repository"
 	"github.com/clemilsonazevedo/blog/internal/routes"
 	"github.com/go-chi/chi/v5"
 )
@@ -31,6 +30,6 @@ func initSrv() *chi.Mux {
 		os.Exit(1)
 	}
 
-	repository.AutoMigrate(db)
+	db.AutoMigrate(db)
 	return route
 }

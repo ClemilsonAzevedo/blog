@@ -19,3 +19,11 @@ type User struct {
 
 	Posts []Post `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
+
+func (User) TableName() string {
+	return "users"
+}
+
+func (user* User)GetID() any {
+	return user.ID
+}

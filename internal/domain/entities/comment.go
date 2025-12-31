@@ -16,3 +16,11 @@ type Comment struct {
 	User User `gorm:"foreignKey:UserID;references:ID"`
 	Post Post `gorm:"foreignKey:PostID;references:ID"`
 }
+
+func (Comment) TableName() string {
+	return "comments"
+}
+
+func (comment* Comment)GetID() any {
+	return comment.ID
+}
