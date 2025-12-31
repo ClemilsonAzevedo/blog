@@ -1,0 +1,16 @@
+services:
+  db:
+    container_name: blog-db
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: blog-db
+      POSTGRES_PORT: 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+volumes:
+  postgres_data: {}
