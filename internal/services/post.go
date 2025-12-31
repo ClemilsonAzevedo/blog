@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/domain/exceptions"
 	"github.com/clemilsonazevedo/blog/internal/repository"
@@ -14,6 +12,5 @@ func FindPostBySlug(slug string) *entities.Post {
 		exceptions.BadRequestException(err.Error())
 	}
 
-	fmt.Printf("%v", &post)
 	return post
 }
