@@ -7,11 +7,11 @@ import (
 )
 
 type Comment struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
-	Content   string    `gorm:"type:text;not null"`
-	CreatedAt time.Time `gorm:"column:created_at;not null;autoCreateTime"`
-	UserID    uuid.UUID `gorm:"column:user_id;index;not null"`
-	PostID    uuid.UUID `gorm:"column:post_id;index;not null"`
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	Content   string    `gorm:"type:text;not null" json:"content"`
+	CreatedAt time.Time `gorm:"column:created_at;not null;autoCreateTime" json:"created_at"`
+	UserID    uuid.UUID `gorm:"column:user_id;type:uuid;index;not null" json:"user_id"`
+	PostID    uuid.UUID `gorm:"column:post_id;type:uuid;index;not null" json:"post_id"`
 
 	User User `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
 	Post Post `gorm:"foreignKey:PostID;references:ID" json:"post,omitempty"`
