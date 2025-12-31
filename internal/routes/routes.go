@@ -7,8 +7,12 @@ import (
 
 func InitRouter() *chi.Mux {
 	r := chi.NewRouter()
+
+	//Middlewares
 	r.Use(middleware.Logger)
 	r.Use(middleware.AllowContentType("application/json"))
+
+	//Routes
 	BindPostRoutes(r)
 
 	return r
