@@ -1,13 +1,14 @@
 package main
 
 import (
-	"os"
 	"net/http"
-	"github.com/clemilsonazevedo/blog/internal/bootstrap"
+	"os"
+
+	"github.com/clemilsonazevedo/blog/cmd/api"
 )
 
 func main() {
-	srv := bootstrap.InitServer();
+	srv := api.InitServer()
 	err := http.ListenAndServe(":8080", srv)
 	if err != nil {
 		os.Exit(1)
