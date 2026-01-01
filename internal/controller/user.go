@@ -29,11 +29,12 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	fmt.Println(dto)
 	user := entities.User{
 		UserName: dto.UserName,
 		Email:    dto.Email,
 		Password: dto.Password,
+		Role:     dto.Role,
 	}
 
 	if err := uc.service.CreateUser(&user); err != nil {
@@ -45,7 +46,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	fmt.Println(id);
+	fmt.Println(id)
 	if id == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
@@ -61,6 +62,7 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 		ID:       user.ID,
 		UserName: user.UserName,
 		Email:    user.Email,
+		Role:     user.Role,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

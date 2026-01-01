@@ -1,13 +1,13 @@
 package enums
 
-type Role int
+type Role string
 
 const (
-	RoleAnonymous Role = iota
-	RoleReader
-	RoleAuthor
+	Anonymous  Role = "anonymous"
+	Reader Role = "reader"
+	Author = "author"
 )
-
+ 
 func (r *Role) VerifyRole() error {
 	return nil
 }
