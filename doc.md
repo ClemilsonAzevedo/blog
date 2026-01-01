@@ -9,7 +9,7 @@
 
 
 ## Clema
-- [ ] Criar versionamento da API
+- [x] Criar versionamento da API
 - [ ] Definir rotas publicas e privadas
 - [ ]  Criar middlaware de auth com JWT
 - [ ] Fazer Error handling com Chi
