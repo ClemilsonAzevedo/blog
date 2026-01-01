@@ -5,7 +5,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func BindPostRoutes(cc *controller.PostController, c *chi.Mux) {
+func BindPostRoutes(cc *controller.PostController, c chi.Router) {
 	c.Group(func(r chi.Router) {
 		r.Post("/post", cc.CreatePost)
 		r.Put("/post/{id}", cc.UpdatePost)
