@@ -1,14 +1,16 @@
 package routes
 
 import (
-	"github.com/clemilsonazevedo/blog/internal/controller"
-	"github.com/clemilsonazevedo/blog/internal/domain/entities"
-	"github.com/go-chi/chi/v5"
+    "github.com/clemilsonazevedo/blog/internal/controller"
+    "github.com/go-chi/chi/v5"
 )
 
-func BindUserRoutes(uc *controller.Controller[entities.User], c *chi.Mux) {
-	c.Group(func(r chi.Router) {
-		r.Post("/user", uc.Create)
-		r.Get("/user/{id}", uc.GetByID)
-	})
+func BindUserRoutes(uc *controller.UserController, r chi.Router) {
+    r.Route("/user", func(r chi.Router) {
+        r.Post("/", uc.CreateUser)          // POST /user
+        r.Get("/{id}", uc.GetUserById)      // GET /user/{id}
+        r.Put("/{id}", uc.UpdateUser)       // PUT /user/{id}
+        r.Delete("/{id}", uc.DeleteUser)    // DELETE /user/{id}
+    })
+    r.Get("/users", uc.GetAllUsers)         // GET /users
 }
