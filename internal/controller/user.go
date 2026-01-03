@@ -51,6 +51,11 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
+	
+	if err := uuid.Validate(id); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	user, err := uc.service.GetUserByID(uuid.MustParse(id))
 	if err != nil {
