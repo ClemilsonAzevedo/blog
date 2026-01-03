@@ -65,7 +65,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		UserName: data.UserName,
 		Email:    data.Email,
 		Password: hashedPassword,
-		Role:     enums.RoleReader,
+		Role:     enums.Reader,
 	}
 	if err := uc.service.CreateUser(&user); err != nil {
 		http.Error(w, "Cannot create user", http.StatusInternalServerError)
@@ -84,6 +84,11 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := uuid.Validate(id); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	user, err := uc.service.GetUserByID(uuid.MustParse(id))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -94,6 +99,7 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 		ID:       user.ID,
 		UserName: user.UserName,
 		Email:    user.Email,
+		Role:     user.Role,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

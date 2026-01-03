@@ -2,7 +2,10 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
@@ -34,6 +37,7 @@ func (uc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 		Content:  dto.Content,
 		Likes:    dto.Likes,
 		Dislikes: dto.Dislikes,
+		UserID:   dto.UserID,
 	}
 
 	if err := uc.service.CreatePost(&Post); err != nil {
@@ -45,24 +49,56 @@ func (uc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
+	fmt.Println(id)
+
 	if id == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
 
-	Post, err := uc.service.GetPostByID(uuid.MustParse(id))
+	post, err := uc.service.GetPostByID(uuid.MustParse(id))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	response := response.PostResponse{
-		ID:       Post.ID,
-		UserID:   Post.UserID,
-		Title:    Post.Title,
-		Content:  Post.Content,
-		Likes:    Post.Likes,
-		Dislikes: Post.Dislikes,
+		UserID:   post.UserID,
+		ID:       post.ID,
+		Title:    post.Title,
+		Content:  post.Content,
+		Slug:     post.Slug,
+		Likes:    post.Likes,
+		Dislikes: post.Dislikes,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	fmt.Printf("Slug pego: %s\n", slug)
+	if slug == "" {
+		http.Error(w, "Slug is required", http.StatusBadRequest)
+		return
+	}
+
+	post, err := uc.service.GetPostBySlug(slug)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response := response.PostResponse{
+		ID:       post.ID,
+		UserID:   post.UserID,
+		Title:    post.Title,
+		Content:  post.Content,
+		Slug:     post.Slug,
+		Likes:    post.Likes,
+		Dislikes: post.Dislikes,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -71,7 +107,7 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *PostController) GetAllPosts(w http.ResponseWriter, r *http.Request) {
-	Posts, err := uc.service.GetAllPosts()
+	posts, err := uc.service.GetAllPosts()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -79,13 +115,56 @@ func (uc *PostController) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(Posts)
+	json.NewEncoder(w).Encode(posts)
+}
+
+func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Request) {
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		http.Error(w, "Page is required", http.StatusBadRequest)
+		return
+	}
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		http.Error(w, "Limit is required", http.StatusBadRequest)
+		return
+	}
+
+	if page <= 0 {
+		page = 1
+	}
+	if limit <= 0 || limit > 100 {
+		limit = 10
+	}
+
+	posts, total, err := c.service.GetPaginatedPosts(page, limit)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	response := map[string]any{
+		"data": posts,
+		"meta": map[string]any{
+			"page":       page,
+			"limit":      limit,
+			"total":      total,
+			"totalPages": int(math.Ceil(float64(total) / float64(limit))),
+		},
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
 
 func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := uuid.Validate(id); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -129,6 +208,11 @@ func (uc *PostController) DeletePost(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := uuid.Validate(id); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

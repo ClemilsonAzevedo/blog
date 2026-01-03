@@ -48,6 +48,11 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
+	
+	if err := uuid.Validate(id); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	Comment, err := cc.service.GetCommentByID(uuid.MustParse(id))
 	if err != nil {

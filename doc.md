@@ -1,13 +1,13 @@
 
 ## Luke
-- [ ] Criar tabela ENUM para as roles
-- [ ] Buscar post por slug
-- [ ] Criar paginação dos posts
-- [ ] Criar o author junto da inicializacao do banco
-- [ ] Criar rota de profile
+- [X] Criar tabela ENUM para as roles
+- [X] Criar o author junto da inicializacao do banco
+- [X] Buscar post por slug
+- [X] Criar paginação dos posts
 - [ ] Criar sistema de cache dos posts
 - [ ] Criar Rota para buscar todos os comentarios
 
+- [ ] Criar rota de profile
 
 ## Clema
 - [x] Criar versionamento da API
