@@ -6,8 +6,9 @@
 - [X] Criar paginação dos posts
 - [ ] Criar sistema de cache dos posts
 - [ ] Criar Rota para buscar todos os comentarios
-
 - [ ] Criar rota de profile
+- [ ] Criar rota de logout
+
 
 ## Clema
 - [x] Criar versionamento da API

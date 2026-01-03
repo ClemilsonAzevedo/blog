@@ -39,7 +39,7 @@ func (ur *UserRepository) GetUserByEmail(email string) (*entities.User, error) {
 	var user entities.User
 	err := ur.DB.Where("email = ?", email).First(&user).Error
 	if err == gorm.ErrRecordNotFound {
-		return nil, nil
+		return &entities.User{}, nil
 	}
 	if err != nil {
 		return nil, err

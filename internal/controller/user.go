@@ -10,8 +10,8 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
+	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/service"
-	"github.com/clemilsonazevedo/blog/middlewares"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
@@ -50,12 +50,11 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if existingUser.Email == data.Email {
-		fmt.Fprintf(w, "%v", existingUser.Email == data.Email)
 		http.Error(w, "User Already Exists", http.StatusConflict)
 		return
 	}
 
-	hashedPassword, err := middlewares.HashPassword(data.Password)
+	hashedPassword, err := auth.HashPassword(data.Password)
 	if err != nil {
 		http.Error(w, "Cannot hash password", http.StatusInternalServerError)
 		return
@@ -74,6 +73,52 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("User Created has successfully"))
+}
+
+func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
+	var data request.UserLogin
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if data.Email == "" || data.Password == "" {
+		http.Error(w, "Email and Password are Required", http.StatusBadRequest)
+		return
+	}
+
+	authUser, err := uc.service.GetUserByEmail(data.Email)
+	if err != nil {
+		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
+		return
+	}
+
+	isPasswordEquals := auth.CheckPassword(authUser.Password, data.Password)
+	if !isPasswordEquals {
+		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
+		return
+	}
+
+	token, exp, err := auth.GenerateJWT(*authUser, 24*7*time.Hour)
+	if err != nil {
+		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
+		return
+	}
+
+	age := int(exp - time.Now().Unix())
+	age = max(age, 0)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Unix(exp, 0),
+		MaxAge:   age,
+	})
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
@@ -221,50 +266,4 @@ func (uc *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		UserName: "",
 		Email:    "",
 	})
-}
-
-func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
-	var data request.UserLogin
-	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if data.Email == "" || data.Password == "" {
-		http.Error(w, "Email and Password are Required", http.StatusBadRequest)
-		return
-	}
-
-	authUser, err := uc.service.GetUserByEmail(data.Email)
-	if err != nil {
-		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
-		return
-	}
-
-	isPasswordEquals := middlewares.CheckPassword(authUser.Password, data.Password)
-	if !isPasswordEquals {
-		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
-		return
-	}
-
-	token, exp, err := middlewares.GenerateJWT(*authUser, 24*7*time.Hour)
-	if err != nil {
-		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
-		return
-	}
-
-	age := int(exp - time.Now().Unix())
-	age = max(age, 0)
-	http.SetCookie(w, &http.Cookie{
-		Name:     "token",
-		Value:    token,
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   false,
-		SameSite: http.SameSiteLaxMode,
-		Expires:  time.Unix(exp, 0),
-		MaxAge:   age,
-	})
-
-	w.WriteHeader(http.StatusOK)
 }

@@ -2,8 +2,8 @@ package private
 
 import (
 	"github.com/clemilsonazevedo/blog/internal/controller"
+	"github.com/clemilsonazevedo/blog/internal/http/middlewares"
 	"github.com/clemilsonazevedo/blog/internal/service"
-	"github.com/clemilsonazevedo/blog/middlewares"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -15,7 +15,7 @@ func BindPrivateRoutes(
 	c chi.Router,
 ) {
 	c.Group(func(r chi.Router) {
-		r.Use(middlewares.JWTAuth(*us))
+		r.Use(middlewares.RequireAuth(*us))
 		// Users
 		r.Get("/me/{id}", uc.GetUserById)
 		r.Put("/me/{id}", uc.UpdateUser)

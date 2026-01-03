@@ -79,7 +79,7 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 
 func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
-	fmt.Printf("Slug pego: %s\n", slug)
+	fmt.Printf("Slug catched: %s\n", slug)
 	if slug == "" {
 		http.Error(w, "Slug is required", http.StatusBadRequest)
 		return
