@@ -3,16 +3,19 @@ package api
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/clemilsonazevedo/blog/config/database"
 	"github.com/clemilsonazevedo/blog/internal/controller"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
+	"github.com/clemilsonazevedo/blog/internal/domain/enums"
 	"github.com/clemilsonazevedo/blog/internal/repository"
 	"github.com/clemilsonazevedo/blog/internal/routes"
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/clemilsonazevedo/blog/middlewares"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"gorm.io/gorm"
 )
 
 type User = entities.User
@@ -29,8 +32,14 @@ func InitServer() *chi.Mux {
 		log.Fatal("ERROR INITIALIZING DATABASE")
 	}
 
+	database.MigrateRoleEnums(db)
 	database.AutoMigrate(db)
-
+	if err := CreateAuthor(db); err != nil {
+		log.Printf("It is not possible to create the author: %v", err)
+	} else {
+		log.Println("Author created with success!")
+	}
+	
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
 	userController := controller.NewUserController(userService)
@@ -58,4 +67,36 @@ func InitServer() *chi.Mux {
 	})
 
 	return r
+}
+
+func CreateAuthor(db *gorm.DB) error {
+	authorName := os.Getenv("AUTHOR_NAME");
+	authorEmail := os.Getenv("AUTHOR_EMAIL");
+	authorPassword := os.Getenv("AUTHOR_PASSWORD");
+	if authorEmail == "" || authorPassword == ""  || authorName == "" {
+		log.Println("UserName or Email or Password not configured!")
+		return nil
+	}
+	
+	var count int64;
+	db.Model(entities.User{}).Where("email = ?", authorEmail).Count(&count)
+	
+	if count > 0 {
+		log.Println("Author already exists")
+		return nil
+	}
+	//TODO: Usar a função de hash do Cle
+	author := entities.User{
+		UserName: authorName,
+		Email: authorEmail,
+		Password: authorPassword,
+		Role: enums.Author,
+	}
+	
+	if err := db.Create(&author).Error; err != nil {
+		return err
+	}
+
+	log.Printf("Author created: %s", authorEmail)
+	return nil
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/service"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
 
@@ -46,6 +46,11 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
+		return
+	}
+	
+	if err := uuid.Validate(id); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

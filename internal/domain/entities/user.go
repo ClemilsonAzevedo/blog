@@ -15,7 +15,7 @@ type User struct {
 	UserName  string    `gorm:"column:username;unique;not null;" json:"username"`
 	Email     string    `gorm:"column:email;unique;not null;" json:"email"`
 	Password  string    `gorm:"column:password;not null" json:"password"`
-	Role      Role      `gorm:"column:role" json:"role"`
+	Role      Role      `gorm:"type:user_role;default:'reader'" json:"role"`
 	CreatedAt time.Time `gorm:"column:created_at;not null,autoCreateTime" json:"created_at"`
 
 	// Posts []Post `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

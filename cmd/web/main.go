@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"os"
-
 	"github.com/clemilsonazevedo/blog/cmd/api"
 )
 

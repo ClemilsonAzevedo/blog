@@ -1,18 +1,22 @@
 package request
 
-import "github.com/clemilsonazevedo/blog/internal/domain/enums"
+import (
+	"github.com/clemilsonazevedo/blog/internal/domain/enums"
+	"github.com/google/uuid"
+)
 
 type UserRegister struct {
 	UserName string `json:"username" binding:"required,min=2,max=100"`
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8,max=100"`
-	Role     int    `json:"role" binding:"required,oneof=0 1 2"`
+	Role     enums.Role    `json:"role" binding:"required,oneof=anonymous reader author"`
 }
 
 type UserUpdate struct {
-	UserName string     `json:"username" binding:"omitempty,min=2,max=100"`
+	ID       uuid.UUID `json:"id" binding:"required,min=1"`
+	UserName string    `json:"username" binding:"omitempty,min=2,max=100"`
 	Email    string     `json:"email" binding:"omitempty,email"`
-	Role     enums.Role `json:"role" binding:"omitempty,oneof=0 1 2"`
+	Role     enums.Role    `json:"role" binding:"required,oneof=anonymous reader author"`
 }
 
 type UserDelete struct {
