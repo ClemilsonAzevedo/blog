@@ -3,11 +3,12 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/service"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
 
@@ -29,9 +30,9 @@ func (uc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Post := entities.Post{
-		Title: dto.Title,
-		Content: dto.Content,
-		Likes: dto.Likes,
+		Title:    dto.Title,
+		Content:  dto.Content,
+		Likes:    dto.Likes,
 		Dislikes: dto.Dislikes,
 	}
 
@@ -48,7 +49,7 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
-	
+
 	Post, err := uc.service.GetPostByID(uuid.MustParse(id))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

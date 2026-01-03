@@ -8,11 +8,12 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/controller"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/repository"
-	"github.com/clemilsonazevedo/blog/internal/routes"
+	"github.com/clemilsonazevedo/blog/internal/routes/private"
+	"github.com/clemilsonazevedo/blog/internal/routes/public"
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/clemilsonazevedo/blog/middlewares"
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type User = entities.User
@@ -52,9 +53,18 @@ func InitServer() *chi.Mux {
 			w.Write([]byte(`{"version":"v1.0","status":"ok"}`))
 		})
 
-		routes.BindUserRoutes(userController, v1)
-		routes.BindPostRoutes(postController, v1)
-		routes.BindCommentRoutes(commentController, v1)
+		public.BindPublicRoutes(
+			userController,
+			postController,
+			v1,
+		)
+		private.BindPrivateRoutes(
+			postController,
+			userController,
+			commentController,
+			userService,
+			v1,
+		)
 	})
 
 	return r
