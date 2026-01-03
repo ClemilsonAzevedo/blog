@@ -5,12 +5,16 @@
 - [X] Buscar post por slug
 - [X] Criar paginação dos posts
 - [ ] Criar sistema de cache dos posts
+- [ ] Criar Rota para buscar todos os comentarios
 - [ ] Criar rota de profile
+- [ ] Criar rota de logout
+
 
 ## Clema
 - [x] Criar versionamento da API
-- [ ] Definir rotas publicas e privadas
-- [ ]  Criar middlaware de auth com JWT
+- [x] Definir rotas publicas e privadas
+- [x]  Criar middlaware de auth com JWT
+- [x] Fazer rota de Login com token nos cookies
+- [x] Fazer middlaware para verificar a role
 - [ ] Fazer Error handling com Chi
-- [ ] Fazer middlaware para verificar a role
 - [ ] Criar sistema views do Post

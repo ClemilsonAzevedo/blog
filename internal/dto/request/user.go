@@ -12,6 +12,11 @@ type UserRegister struct {
 	Role     enums.Role    `json:"role" binding:"required,oneof=anonymous reader author"`
 }
 
+type UserLogin struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8,max=100"`
+}
+
 type UserUpdate struct {
 	ID       uuid.UUID `json:"id" binding:"required,min=1"`
 	UserName string    `json:"username" binding:"omitempty,min=2,max=100"`

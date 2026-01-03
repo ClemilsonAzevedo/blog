@@ -9,12 +9,13 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/controller"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
+	"github.com/clemilsonazevedo/blog/internal/http/middlewares"
+	"github.com/clemilsonazevedo/blog/internal/http/routes/private"
+	"github.com/clemilsonazevedo/blog/internal/http/routes/public"
 	"github.com/clemilsonazevedo/blog/internal/repository"
-	"github.com/clemilsonazevedo/blog/internal/routes"
 	"github.com/clemilsonazevedo/blog/internal/service"
-	"github.com/clemilsonazevedo/blog/middlewares"
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"gorm.io/gorm"
 )
 
@@ -39,7 +40,7 @@ func InitServer() *chi.Mux {
 	} else {
 		log.Println("Author created with success!")
 	}
-	
+
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
 	userController := controller.NewUserController(userService)
@@ -61,26 +62,35 @@ func InitServer() *chi.Mux {
 			w.Write([]byte(`{"version":"v1.0","status":"ok"}`))
 		})
 
-		routes.BindUserRoutes(userController, v1)
-		routes.BindPostRoutes(postController, v1)
-		routes.BindCommentRoutes(commentController, v1)
+		public.BindPublicRoutes(
+			userController,
+			postController,
+			v1,
+		)
+		private.BindPrivateRoutes(
+			postController,
+			userController,
+			commentController,
+			userService,
+			v1,
+		)
 	})
 
 	return r
 }
 
 func CreateAuthor(db *gorm.DB) error {
-	authorName := os.Getenv("AUTHOR_NAME");
-	authorEmail := os.Getenv("AUTHOR_EMAIL");
-	authorPassword := os.Getenv("AUTHOR_PASSWORD");
-	if authorEmail == "" || authorPassword == ""  || authorName == "" {
+	authorName := os.Getenv("AUTHOR_NAME")
+	authorEmail := os.Getenv("AUTHOR_EMAIL")
+	authorPassword := os.Getenv("AUTHOR_PASSWORD")
+	if authorEmail == "" || authorPassword == "" || authorName == "" {
 		log.Println("UserName or Email or Password not configured!")
 		return nil
 	}
-	
-	var count int64;
+
+	var count int64
 	db.Model(entities.User{}).Where("email = ?", authorEmail).Count(&count)
-	
+
 	if count > 0 {
 		log.Println("Author already exists")
 		return nil
@@ -88,11 +98,11 @@ func CreateAuthor(db *gorm.DB) error {
 	//TODO: Usar a função de hash do Cle
 	author := entities.User{
 		UserName: authorName,
-		Email: authorEmail,
+		Email:    authorEmail,
 		Password: authorPassword,
-		Role: enums.Author,
+		Role:     enums.Author,
 	}
-	
+
 	if err := db.Create(&author).Error; err != nil {
 		return err
 	}

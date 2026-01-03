@@ -39,11 +39,11 @@ func (uc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 		Dislikes: dto.Dislikes,
 		UserID:   dto.UserID,
 	}
-
 	if err := uc.service.CreatePost(&Post); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -53,11 +53,6 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 
 	if id == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
-		return
-	}
-
-	if err := uuid.Validate(id); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -84,7 +79,7 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 
 func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
-	fmt.Printf("Slug pego: %s\n", slug)
+	fmt.Printf("Slug catched: %s\n", slug)
 	if slug == "" {
 		http.Error(w, "Slug is required", http.StatusBadRequest)
 		return
@@ -129,6 +124,7 @@ func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "Page is required", http.StatusBadRequest)
 		return
 	}
+
 	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
 	if err != nil {
 		http.Error(w, "Limit is required", http.StatusBadRequest)

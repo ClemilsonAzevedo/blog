@@ -18,7 +18,6 @@ func (ur *UserRepository) CreateUser(user *entities.User) error {
 	return ur.DB.Create(user).Error
 }
 
-
 func (ur *UserRepository) UpdateUser(user *entities.User) error {
 	return ur.DB.Save(user).Error
 }
@@ -39,9 +38,13 @@ func (ur *UserRepository) GetUserByID(id uuid.UUID) (*entities.User, error) {
 func (ur *UserRepository) GetUserByEmail(email string) (*entities.User, error) {
 	var user entities.User
 	err := ur.DB.Where("email = ?", email).First(&user).Error
+	if err == gorm.ErrRecordNotFound {
+		return &entities.User{}, nil
+	}
 	if err != nil {
 		return nil, err
 	}
+
 	return &user, nil
 }
 
