@@ -39,11 +39,11 @@ func (uc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 		Dislikes: dto.Dislikes,
 		UserID:   dto.UserID,
 	}
-
 	if err := uc.service.CreatePost(&Post); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -124,6 +124,7 @@ func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "Page is required", http.StatusBadRequest)
 		return
 	}
+
 	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
 	if err != nil {
 		http.Error(w, "Limit is required", http.StatusBadRequest)

@@ -30,14 +30,14 @@ func RequireAuth(us service.UserService) func(http.Handler) http.Handler {
 				return
 			}
 
-			email, _ := claim["email"].(string)
+			email, _ := claim["Email"].(string)
 			if email == "" {
 				http.Error(w, "This Token is Invalid", http.StatusUnauthorized)
 			}
 
 			user, err := us.GetUserByEmail(email)
 			if err != nil {
-				http.Error(w, "This Token is Invalid", http.StatusUnauthorized)
+				http.Error(w, "User not Found", http.StatusNotFound)
 			}
 
 			fmt.Fprintf(w, "%v", user)

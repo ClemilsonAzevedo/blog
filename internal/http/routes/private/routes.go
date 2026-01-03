@@ -22,7 +22,6 @@ func BindPrivateRoutes(
 		r.Delete("/me/{id}", uc.DeleteUser)
 
 		// Comments
-		r.Get("/comments", cc.GetCommentById)
 		r.Get("/comment/{id}", cc.GetCommentById)
 		r.Post("/comment", cc.CreateComment)
 		r.Put("/comment/{id}", cc.UpdateComment)
@@ -30,7 +29,7 @@ func BindPrivateRoutes(
 
 		// Author Role
 		r.Group(func(a chi.Router) {
-			// r.Use() (Use middleware for verify Role on this routes)
+			a.Use(middlewares.RequireAuthorRole(*us))
 			a.Post("/post", pc.CreatePost)
 			a.Put("/post/{id}", pc.UpdatePost)
 			a.Delete("/post/{id}", pc.DeletePost)
