@@ -31,6 +31,7 @@ func BindPrivateRoutes(
 		// Author Role
 		r.Group(func(a chi.Router) {
 			// r.Use() (Use middleware for verify Role on this routes)
+			a.Use(middlewares.RequireAuthorRole(*us))
 			a.Post("/post", pc.CreatePost)
 			a.Put("/post/{id}", pc.UpdatePost)
 			a.Delete("/post/{id}", pc.DeletePost)

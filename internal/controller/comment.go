@@ -48,7 +48,7 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
-	
+
 	if err := uuid.Validate(id); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -70,6 +70,49 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+}
+
+func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.Request) {
+	postID := chi.URLParam(r, "postID")
+	if postID == "" {
+		http.Error(w, "Post ID is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := uuid.Validate(postID); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	comments, err := cc.service.GetCommentsByPostID(uuid.MustParse(postID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(comments)
+}
+
+func (cc *CommentController) DeleteComment(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		http.Error(w, "ID is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := uuid.Validate(id); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := cc.service.DeleteComment(uuid.MustParse(id)); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (cc *CommentController) UpdateComment(w http.ResponseWriter, r *http.Request) {
@@ -107,19 +150,4 @@ func (cc *CommentController) UpdateComment(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
-}
-
-func (uc *CommentController) DeleteComment(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
-		return
-	}
-
-	if err := uc.service.DeleteComment(uuid.MustParse(id)); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusNoContent)
 }

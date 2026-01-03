@@ -1,14 +1,14 @@
 package middlewares
 
 import (
+	"fmt"
 	"net/http"
 
-	"github.com/clemilsonazevedo/blog/internal/domain/enums"
 	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/service"
 )
 
-func RequireAuthorRole(us service.UserService) func(http.Handler) http.Handler {
+func RequireAuth(us service.UserService) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenStr := ""
@@ -30,22 +30,18 @@ func RequireAuthorRole(us service.UserService) func(http.Handler) http.Handler {
 				return
 			}
 
-			email, _ := claim["email"].(string)
+			email, _ := claim["Email"].(string)
 			if email == "" {
 				http.Error(w, "This Token is Invalid", http.StatusUnauthorized)
 			}
 
 			user, err := us.GetUserByEmail(email)
 			if err != nil {
-				http.Error(w, "User not exists", http.StatusUnauthorized)
+				http.Error(w, "User not Found", http.StatusNotFound)
 			}
 
-			if user.Role != enums.Author {
-				http.Error(w, "Unauthorized Route", http.StatusUnauthorized)
-			}
-
+			fmt.Fprintf(w, "%v", user)
 			next.ServeHTTP(w, r)
 		})
 	}
-
 }
