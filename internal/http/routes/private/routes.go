@@ -36,6 +36,7 @@ func BindPrivateRoutes(
 			a.Post("/post", pc.CreatePost)
 			a.Put("/post/{id}", pc.UpdatePost)
 			a.Delete("/post/{id}", pc.DeletePost)
+
 			a.Get("/users", uc.GetAllUsers)
 		})
 	})

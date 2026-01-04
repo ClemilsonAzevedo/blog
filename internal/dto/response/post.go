@@ -14,5 +14,6 @@ type PostResponse struct {
 	Slug      string    `json:"slug"`
 	Likes     int       `json:"likes"`
 	Dislikes  int       `json:"dislikes"`
+	Views     int       `json:"views"`
 	CreatedAt time.Time `json:"created_at"`
 }

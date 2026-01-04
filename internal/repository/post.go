@@ -4,6 +4,7 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type PostRepository struct {
@@ -26,20 +27,19 @@ func (ur *PostRepository) DeletePost(id uuid.UUID) error {
 	return ur.DB.Delete(&entities.Post{}, id).Error
 }
 
-func (ur *PostRepository) GetPostByID(id uuid.UUID) (*entities.Post, error) {
+func (r *PostRepository) GetPostByID(postId uuid.UUID) (*entities.Post, error) {
 	var Post entities.Post
-	err := ur.DB.First(&Post, id).Error
+	err := r.DB.Model(&entities.Post{}).Where("id = ?", postId).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&Post).Error
 	if err != nil {
 		return nil, err
 	}
+
 	return &Post, nil
 }
 
 func (r *PostRepository) GetPostBySlug(slug string) (*entities.Post, error) {
 	var post entities.Post
-
-	err := r.DB.Where("slug = ?", slug).First(&post).Error
-
+	err := r.DB.Model(&entities.Post{}).Where("slug = ?", slug).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&post).Error
 	if err != nil {
 		return nil, err
 	}

@@ -67,6 +67,7 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 		Slug:     post.Slug,
 		Likes:    post.Likes,
 		Dislikes: post.Dislikes,
+		Views:    post.Views,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
