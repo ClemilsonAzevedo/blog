@@ -16,5 +16,4 @@
 - [x]  Criar middlaware de auth com JWT
 - [x] Fazer rota de Login com token nos cookies
 - [x] Fazer middlaware para verificar a role
-- [ ] Fazer Error handling com Chi
 - [ ] Criar sistema views do Post

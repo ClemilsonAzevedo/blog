@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"math"
 	"net/http"
 	"strconv"
@@ -49,8 +48,6 @@ func (uc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	fmt.Println(id)
-
 	if id == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
@@ -79,7 +76,6 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 
 func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
-	fmt.Printf("Slug catched: %s\n", slug)
 	if slug == "" {
 		http.Error(w, "Slug is required", http.StatusBadRequest)
 		return

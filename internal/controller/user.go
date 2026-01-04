@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -125,9 +124,22 @@ func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		MaxAge:   -1,
+	})
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message":"logout successful"}`))
+}
+
 func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	fmt.Println(id)
 	if id == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
@@ -173,21 +185,6 @@ func (uc *UserController) Profile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
-}
-
-func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "token",
-		Value:    "",
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true,
-		MaxAge:   -1,
-	})
-
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message":"logout successful"}`))
 }
 
 func (uc *UserController) GetUserByEmail(w http.ResponseWriter, r *http.Request) {

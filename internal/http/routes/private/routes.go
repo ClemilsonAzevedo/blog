@@ -17,8 +17,9 @@ func BindPrivateRoutes(
 	c.Group(func(r chi.Router) {
 		r.Use(middlewares.RequireAuth(*us))
 		// Users
+		r.Get("/logout", uc.Logout)
+
 		r.Get("/profile", uc.GetUserById)
-		// r.Get("/logout", uc.Logout)
 		r.Put("/profile", uc.UpdateUser)
 		r.Delete("/profile", uc.DeleteUser)
 
@@ -31,7 +32,6 @@ func BindPrivateRoutes(
 
 		// Author Role
 		r.Group(func(a chi.Router) {
-			// r.Use() (Use middleware for verify Role on this routes)
 			a.Use(middlewares.RequireAuthorRole(*us))
 			a.Post("/post", pc.CreatePost)
 			a.Put("/post/{id}", pc.UpdatePost)

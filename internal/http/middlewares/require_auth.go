@@ -41,7 +41,7 @@ func RequireAuth(us service.UserService) func(http.Handler) http.Handler {
 				http.Error(w, "User not Found", http.StatusNotFound)
 				return
 			}
-			
+
 			ctx := context.WithValue(r.Context(), contextkeys.User, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
