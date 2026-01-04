@@ -5,8 +5,8 @@
 - [X] Buscar post por slug
 - [X] Criar paginação dos posts
 - [X] Criar Rota para buscar todos os comentarios
-- [] Criar rota de profile
-- [ ] Criar rota de logout
+- [X] Criar rota de profile
+- [X] Criar rota de logout
 - [ ] Criar sistema de cache dos posts
 
 
