@@ -17,9 +17,10 @@ func BindPrivateRoutes(
 	c.Group(func(r chi.Router) {
 		r.Use(middlewares.RequireAuth(*us))
 		// Users
-		r.Get("/me/{id}", uc.GetUserById)
-		r.Put("/me/{id}", uc.UpdateUser)
-		r.Delete("/me/{id}", uc.DeleteUser)
+		r.Get("/profile", uc.GetUserById)
+		// r.Get("/logout", uc.Logout)
+		r.Put("/profile", uc.UpdateUser)
+		r.Delete("/profile", uc.DeleteUser)
 
 		// Comments
 		r.Get("/comments", cc.GetCommentById)

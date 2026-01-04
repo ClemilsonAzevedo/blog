@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	contextkeys "github.com/clemilsonazevedo/blog/internal/contextkey"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
@@ -16,8 +17,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type User = entities.User
+type UserService = service.UserService
+
 type UserController struct {
-	service *service.UserService
+	service *UserService
 }
 
 func NewUserController(service *service.UserService) *UserController {
@@ -150,6 +154,40 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+}
+
+func (uc *UserController) Profile(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(contextkeys.User).(*entities.User)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	response := response.UserByID{
+		ID:       user.ID,
+		UserName: user.UserName,
+		Email:    user.Email,
+		Role:     user.Role,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		MaxAge:   -1,
+	})
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message":"logout successful"}`))
 }
 
 func (uc *UserController) GetUserByEmail(w http.ResponseWriter, r *http.Request) {

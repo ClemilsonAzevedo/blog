@@ -1,9 +1,10 @@
 package middlewares
 
 import (
-	"fmt"
+	"context"
 	"net/http"
 
+	contextkeys "github.com/clemilsonazevedo/blog/internal/contextkey"
 	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/service"
 )
@@ -38,10 +39,11 @@ func RequireAuth(us service.UserService) func(http.Handler) http.Handler {
 			user, err := us.GetUserByEmail(email)
 			if err != nil {
 				http.Error(w, "User not Found", http.StatusNotFound)
+				return
 			}
-
-			fmt.Fprintf(w, "%v", user)
-			next.ServeHTTP(w, r)
+			
+			ctx := context.WithValue(r.Context(), contextkeys.User, user)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
