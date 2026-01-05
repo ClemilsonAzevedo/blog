@@ -68,6 +68,7 @@ func InitServer() *chi.Mux {
 		public.BindPublicRoutes(
 			userController,
 			postController,
+			commentController,
 			v1,
 		)
 		private.BindPrivateRoutes(

@@ -73,6 +73,18 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(response)
 }
 
+func (cc * CommentController) GetAllComments(w http.ResponseWriter, r *http.Request) {
+	comments, err := cc.service.GetAllComments()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(comments)
+}
+
 func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "postID")
 	if postID == "" {
