@@ -73,8 +73,19 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(response)
 }
 
-func (cc * CommentController) GetAllComments(w http.ResponseWriter, r *http.Request) {
-	comments, err := cc.service.GetAllComments()
+func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.Request) {
+	postID := chi.URLParam(r, "postID")
+	if postID == "" {
+		http.Error(w, "Post ID is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := uuid.Validate(postID); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	comments, err := cc.service.GetCommentsByPostID(uuid.MustParse(postID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -85,7 +96,30 @@ func (cc * CommentController) GetAllComments(w http.ResponseWriter, r *http.Requ
 	json.NewEncoder(w).Encode(comments)
 }
 
-func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.Request) {
+func (cc *CommentController) GetCommentByUserID(w http.ResponseWriter, r *http.Request) {
+	userID := chi.URLParam(r, "userID")
+	if userID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := uuid.Validate(userID); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	comments, err := cc.service.GetCommentsByUserID(uuid.MustParse(userID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(comments)
+}
+
+func (cc *CommentController) GetCommentsByPostID(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "postID")
 	if postID == "" {
 		http.Error(w, "Post ID is required", http.StatusBadRequest)
