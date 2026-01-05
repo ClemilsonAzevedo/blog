@@ -4,8 +4,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/clemilsonazevedo/blog/config/database"
+	"github.com/clemilsonazevedo/blog/internal/cache"
 	"github.com/clemilsonazevedo/blog/internal/controller"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
@@ -46,7 +48,8 @@ func InitServer() *chi.Mux {
 	userController := controller.NewUserController(userService)
 
 	postRepo := repository.NewPostRepository(db)
-	postService := service.NewPostService(postRepo)
+	postCache := cache.NewPostCache(5 * time.Minute)
+	postService := service.NewPostService(postRepo, postCache)
 	postController := controller.NewPostController(postService)
 
 	commentRepo := repository.NewCommentRepository(db)
