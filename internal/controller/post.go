@@ -60,14 +60,15 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := response.PostResponse{
-		UserID:   post.UserID,
-		ID:       post.ID,
-		Title:    post.Title,
-		Content:  post.Content,
-		Slug:     post.Slug,
-		Likes:    post.Likes,
-		Dislikes: post.Dislikes,
-		Views:    post.Views,
+		UserID:    post.UserID,
+		ID:        post.ID,
+		Title:     post.Title,
+		Content:   post.Content,
+		Slug:      post.Slug,
+		Likes:     post.Likes,
+		Dislikes:  post.Dislikes,
+		Views:     post.Views,
+		CreatedAt: post.CreatedAt,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -89,13 +90,14 @@ func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) 
 	}
 
 	response := response.PostResponse{
-		ID:       post.ID,
-		UserID:   post.UserID,
-		Title:    post.Title,
-		Content:  post.Content,
-		Slug:     post.Slug,
-		Likes:    post.Likes,
-		Dislikes: post.Dislikes,
+		ID:        post.ID,
+		UserID:    post.UserID,
+		Title:     post.Title,
+		Content:   post.Content,
+		Slug:      post.Slug,
+		Likes:     post.Likes,
+		Dislikes:  post.Dislikes,
+		CreatedAt: post.CreatedAt,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

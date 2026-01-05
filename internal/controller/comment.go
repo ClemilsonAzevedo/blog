@@ -61,10 +61,11 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 	}
 
 	response := response.CommentResponse{
-		ID:      Comment.ID,
-		Content: Comment.Content,
-		UserID:  Comment.UserID,
-		PostID:  Comment.PostID,
+		ID:        Comment.ID,
+		Content:   Comment.Content,
+		UserID:    Comment.UserID,
+		PostID:    Comment.PostID,
+		CreatedAt: Comment.CreatedAt,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
