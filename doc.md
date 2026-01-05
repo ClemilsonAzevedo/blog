@@ -7,7 +7,7 @@
 - [X] Criar Rota para buscar todos os comentarios
 - [X] Criar rota de profile
 - [X] Criar rota de logout
-- [ ] Criar sistema de cache dos posts
+- [X] Criar sistema de cache dos posts
 
 
 ## Clema

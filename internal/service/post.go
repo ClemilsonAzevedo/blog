@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 
+	"github.com/clemilsonazevedo/blog/internal/cache"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/repository"
 	"github.com/google/uuid"
@@ -13,11 +14,13 @@ type Post = entities.Post
 type PostRepository = repository.PostRepository
 type PostService struct {
 	PostRepository *PostRepository
+	cache          *cache.PostCache
 }
 
-func NewPostService(PostRepository *PostRepository) *PostService {
+func NewPostService(PostRepository *PostRepository, postCache *cache.PostCache) *PostService {
 	return &PostService{
 		PostRepository: PostRepository,
+		cache:          postCache,
 	}
 }
 
@@ -28,33 +31,95 @@ func (s *PostService) CreatePost(post *Post) error {
 		return err
 	}
 	post.Slug = slug
-	return s.PostRepository.CreatePost(post)
+
+	if err := s.PostRepository.CreatePost(post); err != nil {
+		return err
+	}
+
+	s.cache.InvalidateLists()
+	return nil
 }
 
 func (s *PostService) UpdatePost(post *Post) error {
-	return s.PostRepository.UpdatePost(post)
+	oldPost, _ := s.PostRepository.GetPostByID(post.ID)
+	oldSlug := ""
+	if oldPost != nil {
+		oldSlug = oldPost.Slug
+	}
+
+	if err := s.PostRepository.UpdatePost(post); err != nil {
+		return err
+	}
+
+	s.cache.InvalidatePost(post.ID, oldSlug)
+	if post.Slug != oldSlug {
+		s.cache.InvalidatePost(post.ID, post.Slug)
+	}
+	s.cache.InvalidateLists()
+	return nil
 }
 
 func (s *PostService) DeletePost(id uuid.UUID) error {
-	return s.PostRepository.DeletePost(id)
+	post, _ := s.PostRepository.GetPostByID(id)
+	slug := ""
+	if post != nil {
+		slug = post.Slug
+	}
+
+	if err := s.PostRepository.DeletePost(id); err != nil {
+		return err
+	}
+
+	s.cache.InvalidatePost(id, slug)
+	s.cache.InvalidateLists()
+	return nil
 }
 
 func (s *PostService) GetPostByID(id uuid.UUID) (*Post, error) {
-	return s.PostRepository.GetPostByID(id)
+	post, err := s.PostRepository.GetPostByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return post, nil
 }
 
 func (s *PostService) GetPostBySlug(slug string) (*Post, error) {
-	return s.PostRepository.GetPostBySlug(slug)
+	post, err := s.PostRepository.GetPostBySlug(slug)
+	if err != nil {
+		return nil, err
+	}
+
+	return post, nil
 }
 
 func (s *PostService) GetAllPosts() ([]*Post, error) {
-	return s.PostRepository.GetAllPosts()
+	if posts, found := s.cache.GetAll(); found {
+		return posts, nil
+	}
+
+	posts, err := s.PostRepository.GetAllPosts()
+	if err != nil {
+		return nil, err
+	}
+
+	s.cache.SetAll(posts)
+	return posts, nil
 }
 
 func (s *PostService) GetPaginatedPosts(page, limit int) ([]entities.Post, int64, error) {
+	if result, found := s.cache.GetPaginated(page, limit); found {
+		return result.Posts, result.Total, nil
+	}
+	
 	offset := (page - 1) * limit
+	posts, total, err := s.PostRepository.FindAllPaginated(limit, offset)
+	if err != nil {
+		return nil, 0, err
+	}
 
-	return s.PostRepository.FindAllPaginated(limit, offset)
+	s.cache.SetPaginated(page, limit, posts, total)
+	return posts, total, nil
 }
 
 func (s *PostService) GenerateUniqueSlug(title string) (string, error) {

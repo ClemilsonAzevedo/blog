@@ -17,7 +17,7 @@ type Post struct {
 	CreatedAt time.Time `gorm:"column:created_at;not null;autoCreateTime" json:"created_at"`
 	UserID    uuid.UUID `gorm:"column:user_id;index;not null" json:"user_id"`
 
-	//User User `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
+	User User `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
 }
 
 func (Post) TableName() string {
