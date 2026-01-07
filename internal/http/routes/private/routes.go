@@ -19,7 +19,7 @@ func BindPrivateRoutes(
 		// Users
 		r.Get("/logout", uc.Logout)
 
-		r.Get("/profile", uc.GetUserById)
+		r.Get("/profile", uc.Profile)
 		r.Put("/profile", uc.UpdateUser)
 		r.Delete("/profile", uc.DeleteUser)
 

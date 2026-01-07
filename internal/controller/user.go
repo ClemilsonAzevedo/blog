@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	contextkeys "github.com/clemilsonazevedo/blog/internal/contextkey"
+	
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
@@ -169,7 +169,7 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserController) Profile(w http.ResponseWriter, r *http.Request) {
-	user, ok := r.Context().Value(contextkeys.User).(*entities.User)
+	user, ok := r.Context().Value("user").(*entities.User)
 	if !ok {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
