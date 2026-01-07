@@ -7,7 +7,7 @@ type PostCreate struct {
 	Content  string    `json:"content" binding:"required,min=2,max=1000"`
 	Likes    int       `json:"likes" binding:"required,min=0"`
 	Dislikes int       `json:"dislikes" binding:"required,min=0"`
-	UserID   uuid.UUID `json:"user_id" binding:"required,min=1"`
+	UserID   uuid.UUID `json:"userId" binding:"required,min=1"`
 }
 
 type PostUpdate struct {

@@ -143,8 +143,18 @@ func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	postsDto := make([]response.PostResponse, len(posts));
+	for i, post := range posts {
+		postsDto[i] = response.PostResponse{
+			ID:        post.ID,
+			Title:     post.Title,
+			Content:   post.Content,
+			CreatedAt: post.CreatedAt,
+		}
+	}
+
 	response := map[string]any{
-		"data": posts,
+		"data": postsDto,
 		"meta": map[string]any{
 			"page":       page,
 			"limit":      limit,

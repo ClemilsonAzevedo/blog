@@ -5,15 +5,15 @@ import (
 )
 
 type CommentCreate struct {
-	UserID  uuid.UUID `json:"user_id"`
-	PostID  uuid.UUID `json:"post_id"`
+	UserID  uuid.UUID `json:"userId"`
+	PostID  uuid.UUID `json:"postId"`
 	Content string    `json:"content"`
 }
 
 type CommentUpdate struct {
 	ID      uuid.UUID `json:"id"`
-	UserID  uuid.UUID `json:"user_id"`
-	PostID  uuid.UUID `json:"post_id"`
+	UserID  uuid.UUID `json:"userId"`
+	PostID  uuid.UUID `json:"postId"`
 	Content string    `json:"content"`
 }
 

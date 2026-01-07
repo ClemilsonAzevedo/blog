@@ -11,6 +11,7 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/controller"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
+	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/http/middlewares"
 	"github.com/clemilsonazevedo/blog/internal/http/routes/private"
 	"github.com/clemilsonazevedo/blog/internal/http/routes/public"
@@ -39,8 +40,6 @@ func InitServer() *chi.Mux {
 	database.AutoMigrate(db)
 	if err := CreateAuthor(db); err != nil {
 		log.Printf("It is not possible to create the author: %v", err)
-	} else {
-		log.Println("Author created with success!")
 	}
 
 	userRepo := repository.NewUserRepository(db)
@@ -99,11 +98,16 @@ func CreateAuthor(db *gorm.DB) error {
 		log.Println("Author already exists")
 		return nil
 	}
-	//TODO: Usar a função de hash do Cle
+
+	hashpassword, err := auth.HashPassword(authorPassword)
+	if err != nil {
+		return err
+	}
+
 	author := entities.User{
 		UserName: authorName,
 		Email:    authorEmail,
-		Password: authorPassword,
+		Password: hashpassword,
 		Role:     enums.Author,
 	}
 
@@ -111,6 +115,6 @@ func CreateAuthor(db *gorm.DB) error {
 		return err
 	}
 
-	log.Printf("Author created: %s", authorEmail)
+	log.Printf("Author created: %s with success", authorEmail)
 	return nil
 }

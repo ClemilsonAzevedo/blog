@@ -15,8 +15,7 @@ func BindPublicRoutes(uc *UserController, pc *PostController, cc *CommentControl
 			r.Post("/register", uc.CreateUser)
 			r.Post("/login", uc.LoginUser)
 		
-			r.Get("/posts", pc.GetAllPosts)
-			r.Get("/posts/paginated", pc.GetPaginatedPosts)
+			r.Get("/posts", pc.GetPaginatedPosts)
 			r.Get("/post/{id}", pc.GetPostById)
 		})
 }
