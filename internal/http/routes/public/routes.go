@@ -11,12 +11,14 @@ type CommentController = controller.CommentController
 
 func BindPublicRoutes(uc *UserController, pc *PostController, cc *CommentController,
 	c chi.Router) {
-		c.Group(func(r chi.Router) {
-			r.Post("/register", uc.CreateUser)
-			r.Post("/login", uc.LoginUser)
-		
-			r.Get("/posts", pc.GetAllPosts)
-			r.Get("/posts/paginated", pc.GetPaginatedPosts)
-			r.Get("/post/{id}", pc.GetPostById)
-		})
+	c.Group(func(r chi.Router) {
+		r.Post("/register", uc.CreateUser)
+		r.Post("/login", uc.LoginUser)
+
+		r.Get("/posts", pc.GetAllPosts)
+		r.Get("/posts/paginated", pc.GetPaginatedPosts)
+		r.Get("/post/{id}", pc.GetPostById)
+
+		r.Get("/comments/{postID}", cc.GetCommentByPostID)
+	})
 }

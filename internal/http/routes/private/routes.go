@@ -24,8 +24,8 @@ func BindPrivateRoutes(
 		r.Delete("/profile", uc.DeleteUser)
 
 		// Comments
-		r.Get("/comments", cc.GetCommentById)
 		r.Post("/comment", cc.CreateComment)
+		r.Get("/comments", cc.GetCommentById)
 
 		// Author Role
 		r.Group(func(a chi.Router) {
