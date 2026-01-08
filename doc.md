@@ -16,4 +16,12 @@
 - [x]  Criar middlaware de auth com JWT
 - [x] Fazer rota de Login com token nos cookies
 - [x] Fazer middlaware para verificar a role
-- [ ] Criar sistema views do Post
+- [x] Criar sistema views do Post
+- [x] Fazer integração com a AI
+- [x] Gerar titulos do post com base no conteudo
+- [x] Gerar hashtags para o post de acordo ao conteudo
+- [x] Hashear a password do Author
+- [ ] Trocar o content por arquivo
+- [ ] Adicionar as hashtags no conteudo
+- [ ] Mover o prompt da pasta ai
+- [ ] Fazer verificação de campos vazios nas rotas/controllers

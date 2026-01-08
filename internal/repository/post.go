@@ -15,21 +15,21 @@ func NewPostRepository(db *gorm.DB) *PostRepository {
 	return &PostRepository{DB: db}
 }
 
-func (ur *PostRepository) CreatePost(Post *entities.Post) error {
-	return ur.DB.Create(Post).Error
+func (pr *PostRepository) CreatePost(Post *entities.Post) error {
+	return pr.DB.Create(Post).Error
 }
 
-func (ur *PostRepository) UpdatePost(Post *entities.Post) error {
-	return ur.DB.Save(Post).Error
+func (pr *PostRepository) UpdatePost(Post *entities.Post) error {
+	return pr.DB.Save(Post).Error
 }
 
-func (ur *PostRepository) DeletePost(id uuid.UUID) error {
-	return ur.DB.Delete(&entities.Post{}, id).Error
+func (pr *PostRepository) DeletePost(id uuid.UUID) error {
+	return pr.DB.Delete(&entities.Post{}, id).Error
 }
 
-func (r *PostRepository) GetPostByID(postId uuid.UUID) (*entities.Post, error) {
+func (pr *PostRepository) GetPostByID(postId uuid.UUID) (*entities.Post, error) {
 	var Post entities.Post
-	err := r.DB.Model(&entities.Post{}).Where("id = ?", postId).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&Post).Error
+	err := pr.DB.Model(&entities.Post{}).Where("id = ?", postId).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&Post).Error
 	if err != nil {
 		return nil, err
 	}
@@ -37,9 +37,9 @@ func (r *PostRepository) GetPostByID(postId uuid.UUID) (*entities.Post, error) {
 	return &Post, nil
 }
 
-func (r *PostRepository) GetPostBySlug(slug string) (*entities.Post, error) {
+func (pr *PostRepository) GetPostBySlug(slug string) (*entities.Post, error) {
 	var post entities.Post
-	err := r.DB.Model(&entities.Post{}).Where("slug = ?", slug).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&post).Error
+	err := pr.DB.Model(&entities.Post{}).Where("slug = ?", slug).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&post).Error
 	if err != nil {
 		return nil, err
 	}
@@ -47,24 +47,24 @@ func (r *PostRepository) GetPostBySlug(slug string) (*entities.Post, error) {
 	return &post, nil
 }
 
-func (ur *PostRepository) GetAllPosts() ([]*entities.Post, error) {
+func (pr *PostRepository) GetAllPosts() ([]*entities.Post, error) {
 	var Posts []*entities.Post
-	err := ur.DB.Find(&Posts).Error
+	err := pr.DB.Find(&Posts).Error
 	if err != nil {
 		return nil, err
 	}
 	return Posts, nil
 }
 
-func (r *PostRepository) FindAllPaginated(limit, offset int) ([]entities.Post, int64, error) {
+func (pr *PostRepository) FindAllPaginated(limit, offset int) ([]entities.Post, int64, error) {
 	var posts []entities.Post
 	var total int64
 
-	if err := r.DB.Model(&entities.Post{}).Count(&total).Error; err != nil {
+	if err := pr.DB.Model(&entities.Post{}).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
-	err := r.DB.
+	err := pr.DB.
 		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset).

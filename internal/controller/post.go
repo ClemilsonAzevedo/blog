@@ -10,6 +10,7 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/service"
+	"github.com/clemilsonazevedo/blog/tools"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
@@ -24,7 +25,7 @@ func NewPostController(service *service.PostService) *PostController {
 	}
 }
 
-func (uc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
+func (pc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 	var dto request.PostCreate
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -38,7 +39,34 @@ func (uc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 		Dislikes: dto.Dislikes,
 		UserID:   dto.UserID,
 	}
-	if err := uc.service.CreatePost(&Post); err != nil {
+	if err := pc.service.CreatePost(&Post); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
+
+func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Request) {
+	var dto request.AiPostCreate
+	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if dto.Content == "" {
+		http.Error(w, "You need set Content and AuthorId to create a post", http.StatusBadRequest)
+		return
+	}
+
+	aiRes := tools.GeneratePropsOfContent(dto.Content)
+	Post := entities.Post{
+		Title:   aiRes.Title,
+		Content: dto.Content + aiRes.Hashtags, //For tests, change
+		UserID:  dto.UserID,
+	}
+
+	if err := pc.service.CreatePost(&Post); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -143,7 +171,7 @@ func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	postsDto := make([]response.PostResponse, len(posts));
+	postsDto := make([]response.PostResponse, len(posts))
 	for i, post := range posts {
 		postsDto[i] = response.PostResponse{
 			ID:        post.ID,

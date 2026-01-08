@@ -10,6 +10,11 @@ type PostCreate struct {
 	UserID   uuid.UUID `json:"userId" binding:"required,min=1"`
 }
 
+type AiPostCreate struct {
+	Content string    `json:"content" binding:"required,min=2,max=1000"`
+	UserID  uuid.UUID `json:"userId" binding:"required,min=1"`
+}
+
 type PostUpdate struct {
 	ID       uuid.UUID `json:"id" binding:"required,min=1"`
 	Title    string    `json:"title" binding:"required,min=2,max=100"`
