@@ -88,7 +88,7 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := response.PostResponse{
-		UserID:    post.UserID,
+		AuthorId:  post.UserID,
 		ID:        post.ID,
 		Title:     post.Title,
 		Content:   post.Content,
@@ -119,7 +119,7 @@ func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) 
 
 	response := response.PostResponse{
 		ID:        post.ID,
-		UserID:    post.UserID,
+		AuthorId:  post.UserID,
 		Title:     post.Title,
 		Content:   post.Content,
 		Slug:      post.Slug,
@@ -175,8 +175,11 @@ func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Reques
 	for i, post := range posts {
 		postsDto[i] = response.PostResponse{
 			ID:        post.ID,
-			Title:     post.Title,
 			Content:   post.Content,
+			Title:     post.Title,
+			Slug:      post.Slug,
+			Views:     post.Views,
+			AuthorId:  post.UserID,
 			CreatedAt: post.CreatedAt,
 		}
 	}
@@ -230,7 +233,7 @@ func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 
 	response := response.PostResponse{
 		ID:       post.ID,
-		UserID:   post.UserID,
+		AuthorId: post.UserID,
 		Title:    post.Title,
 		Content:  post.Content,
 		Likes:    post.Likes,

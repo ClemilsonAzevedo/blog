@@ -8,7 +8,7 @@ import (
 
 type PostResponse struct {
 	ID        uuid.UUID `json:"id"`
-	UserID    uuid.UUID `json:"user_id"`
+	AuthorId  uuid.UUID `json:"author_id"`
 	Title     string    `json:"title"`
 	Content   string    `json:"content"`
 	Slug      string    `json:"slug"`
