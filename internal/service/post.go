@@ -111,7 +111,7 @@ func (s *PostService) GetPaginatedPosts(page, limit int) ([]entities.Post, int64
 	if result, found := s.cache.GetPaginated(page, limit); found {
 		return result.Posts, result.Total, nil
 	}
-	
+
 	offset := (page - 1) * limit
 	posts, total, err := s.PostRepository.FindAllPaginated(limit, offset)
 	if err != nil {

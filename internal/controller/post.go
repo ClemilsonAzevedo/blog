@@ -10,6 +10,7 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/service"
+	"github.com/clemilsonazevedo/blog/pkg"
 	"github.com/clemilsonazevedo/blog/tools"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -29,6 +30,11 @@ func (pc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 	var dto request.PostCreate
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if dto.Content == "" || dto.Title == "" {
+		http.Error(w, "You need set Content and AuthorId to create a post", http.StatusBadRequest)
 		return
 	}
 
@@ -62,7 +68,7 @@ func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Reques
 	aiRes := tools.GeneratePropsOfContent(dto.Content)
 	Post := entities.Post{
 		Title:   aiRes.Title,
-		Content: dto.Content + aiRes.Hashtags, //For tests, change
+		Content: pkg.GeneratePostContent(dto.Content, aiRes.Hashtags),
 		UserID:  dto.UserID,
 	}
 

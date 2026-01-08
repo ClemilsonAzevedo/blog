@@ -21,7 +21,7 @@
 - [x] Gerar titulos do post com base no conteudo
 - [x] Gerar hashtags para o post de acordo ao conteudo
 - [x] Hashear a password do Author
-- [ ] Trocar o content por arquivo
-- [ ] Adicionar as hashtags no conteudo
+- [x] Adicionar as hashtags no conteudo
 - [ ] Mover o prompt da pasta ai
 - [ ] Fazer verificação de campos vazios nas rotas/controllers
+- [ ] Trocar o content por arquivo
