@@ -29,6 +29,11 @@ func (cc *CommentController) CreateComment(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	if dto.Content == "" || dto.PostID == uuid.Nil || dto.UserID == uuid.Nil {
+		http.Error(w, "You need to provide all comments data", http.StatusBadRequest)
+		return
+	}
+
 	Comment := entities.Comment{
 		Content: dto.Content,
 		UserID:  dto.UserID,
