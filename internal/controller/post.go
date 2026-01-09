@@ -13,7 +13,7 @@ import (
 	"github.com/clemilsonazevedo/blog/pkg"
 	"github.com/clemilsonazevedo/blog/tools"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
+	"go.bryk.io/pkg/ulid"
 )
 
 type PostController struct {
@@ -38,7 +38,14 @@ func (pc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	postId, err := ulid.New()
+	if err != nil {
+		http.Error(w, "Cannot Generate ULID to this Post", http.StatusInternalServerError)
+		return
+	}
+
 	Post := entities.Post{
+		ID:       postId,
 		Title:    dto.Title,
 		Content:  dto.Content,
 		Likes:    dto.Likes,
@@ -66,7 +73,15 @@ func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Reques
 	}
 
 	aiRes := tools.GeneratePropsOfContent(dto.Content)
+
+	aiPostId, err := ulid.New()
+	if err != nil {
+		http.Error(w, "Cannot Generate ULID to this Post", http.StatusInternalServerError)
+		return
+	}
+
 	Post := entities.Post{
+		ID:      aiPostId,
 		Title:   aiRes.Title,
 		Content: pkg.GeneratePostContent(dto.Content, aiRes.Hashtags),
 		UserID:  dto.UserID,
@@ -81,13 +96,19 @@ func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Reques
 }
 
 func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	postIdStr := chi.URLParam(r, "id")
+	if postIdStr == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
 
-	post, err := uc.service.GetPostByID(uuid.MustParse(id))
+	postId, err := ulid.Parse(postIdStr)
+	if err != nil {
+		http.Error(w, "Cannot parse Id of Post", http.StatusBadRequest)
+		return
+	}
+
+	post, err := uc.service.GetPostByID(postId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -204,13 +225,14 @@ func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Reques
 }
 
 func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	postIdStr := chi.URLParam(r, "id")
+	if postIdStr == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := uuid.Validate(id); err != nil {
+	postId, err := ulid.Parse(postIdStr)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -221,7 +243,7 @@ func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err := uc.service.GetPostByID(uuid.MustParse(id))
+	post, err := uc.service.GetPostByID(postId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -252,18 +274,19 @@ func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *PostController) DeletePost(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	postIdStr := chi.URLParam(r, "id")
+	if postIdStr == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := uuid.Validate(id); err != nil {
+	postId, err := ulid.Parse(postIdStr)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := uc.service.DeletePost(uuid.MustParse(id)); err != nil {
+	if err := uc.service.DeletePost(postId); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

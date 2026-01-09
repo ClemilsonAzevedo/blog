@@ -20,7 +20,6 @@ func DropAll(db *gorm.DB) {
 }
 
 func MigrateRoleEnums(db *gorm.DB) error {
-	// 1. Criar o tipo com o nome CORRETO
 	err := db.Exec("CREATE TYPE user_role AS ENUM ('anonymous', 'reader', 'author');").Error
 
 	if err != nil && !isTypeExistsError(err) {
@@ -32,7 +31,6 @@ func MigrateRoleEnums(db *gorm.DB) error {
 }
 
 func isTypeExistsError(err error) bool {
-	// Verificar ambos os nomes possíveis
 	errorStr := err.Error()
 	return strings.Contains(errorStr, "type \"user_role\" already exists") ||
 		strings.Contains(errorStr, "SQLSTATE 42710")

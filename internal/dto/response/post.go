@@ -3,12 +3,12 @@ package response
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"go.bryk.io/pkg/ulid"
 )
 
 type PostResponse struct {
-	ID        uuid.UUID `json:"id"`
-	AuthorId  uuid.UUID `json:"author_id"`
+	ID        ulid.ULID `json:"id"`
+	AuthorId  ulid.ULID `json:"author_id"`
 	Title     string    `json:"title"`
 	Content   string    `json:"content"`
 	Slug      string    `json:"slug"`

@@ -9,7 +9,7 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
+	"go.bryk.io/pkg/ulid"
 )
 
 type CommentController struct {
@@ -29,12 +29,19 @@ func (cc *CommentController) CreateComment(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if dto.Content == "" || dto.PostID == uuid.Nil || dto.UserID == uuid.Nil {
+	if dto.Content == "" || dto.UserID.String() == "" || dto.PostID.String() == "" {
 		http.Error(w, "You need to provide all comments data", http.StatusBadRequest)
 		return
 	}
 
+	commentId, err := ulid.New()
+	if err != nil {
+		http.Error(w, "Cannot Generate ULID to this Comment", http.StatusInternalServerError)
+		return
+	}
+
 	Comment := entities.Comment{
+		ID:      commentId,
 		Content: dto.Content,
 		UserID:  dto.UserID,
 		PostID:  dto.PostID,
@@ -48,18 +55,19 @@ func (cc *CommentController) CreateComment(w http.ResponseWriter, r *http.Reques
 }
 
 func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	idStr := chi.URLParam(r, "id")
+	if idStr == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := uuid.Validate(id); err != nil {
+	id, err := ulid.Parse(idStr)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	Comment, err := cc.service.GetCommentByID(uuid.MustParse(id))
+	Comment, err := cc.service.GetCommentByID(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -79,18 +87,19 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 }
 
 func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.Request) {
-	postID := chi.URLParam(r, "postID")
-	if postID == "" {
+	postIdStr := chi.URLParam(r, "postID")
+	if postIdStr == "" {
 		http.Error(w, "Post ID is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := uuid.Validate(postID); err != nil {
+	postId, err := ulid.Parse(postIdStr)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	comments, err := cc.service.GetCommentsByPostID(uuid.MustParse(postID))
+	comments, err := cc.service.GetCommentsByPostID(postId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -102,18 +111,19 @@ func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.R
 }
 
 func (cc *CommentController) GetCommentByUserID(w http.ResponseWriter, r *http.Request) {
-	userID := chi.URLParam(r, "userID")
-	if userID == "" {
+	userIdStr := chi.URLParam(r, "userID")
+	if userIdStr == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := uuid.Validate(userID); err != nil {
+	userId, err := ulid.Parse(userIdStr)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	comments, err := cc.service.GetCommentsByUserID(uuid.MustParse(userID))
+	comments, err := cc.service.GetCommentsByUserID(userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -125,18 +135,19 @@ func (cc *CommentController) GetCommentByUserID(w http.ResponseWriter, r *http.R
 }
 
 func (cc *CommentController) GetCommentsByPostID(w http.ResponseWriter, r *http.Request) {
-	postID := chi.URLParam(r, "postID")
-	if postID == "" {
+	postIdStr := chi.URLParam(r, "postID")
+	if postIdStr == "" {
 		http.Error(w, "Post ID is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := uuid.Validate(postID); err != nil {
+	postId, err := ulid.Parse(postIdStr)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	comments, err := cc.service.GetCommentsByPostID(uuid.MustParse(postID))
+	comments, err := cc.service.GetCommentsByPostID(postId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -148,18 +159,19 @@ func (cc *CommentController) GetCommentsByPostID(w http.ResponseWriter, r *http.
 }
 
 func (cc *CommentController) DeleteComment(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	commentIdStr := chi.URLParam(r, "id")
+	if commentIdStr == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := uuid.Validate(id); err != nil {
+	commentId, err := ulid.Parse(commentIdStr)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := cc.service.DeleteComment(uuid.MustParse(id)); err != nil {
+	if err := cc.service.DeleteComment(commentId); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -168,8 +180,8 @@ func (cc *CommentController) DeleteComment(w http.ResponseWriter, r *http.Reques
 }
 
 func (cc *CommentController) UpdateComment(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	commentIdStr := chi.URLParam(r, "id")
+	if commentIdStr == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
@@ -180,8 +192,14 @@ func (cc *CommentController) UpdateComment(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	commentId, err := ulid.Parse(commentIdStr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	comment := entities.Comment{
-		ID:      uuid.MustParse(id),
+		ID:      commentId,
 		UserID:  dto.UserID,
 		PostID:  dto.PostID,
 		Content: dto.Content,

@@ -1,22 +1,22 @@
 package request
 
-import "github.com/google/uuid"
+import "go.bryk.io/pkg/ulid"
 
 type PostCreate struct {
 	Title    string    `json:"title" binding:"required,min=2,max=100"`
 	Content  string    `json:"content" binding:"required,min=2,max=1000"`
 	Likes    int       `json:"likes" binding:"required,min=0"`
 	Dislikes int       `json:"dislikes" binding:"required,min=0"`
-	UserID   uuid.UUID `json:"userId" binding:"required,min=1"`
+	UserID   ulid.ULID `json:"userId" binding:"required,min=1"`
 }
 
 type AiPostCreate struct {
 	Content string    `json:"content" binding:"required,min=2,max=1000"`
-	UserID  uuid.UUID `json:"userId" binding:"required,min=1"`
+	UserID  ulid.ULID `json:"userId" binding:"required,min=1"`
 }
 
 type PostUpdate struct {
-	ID       uuid.UUID `json:"id" binding:"required,min=1"`
+	ID       ulid.ULID `json:"id" binding:"required,min=1"`
 	Title    string    `json:"title" binding:"required,min=2,max=100"`
 	Content  string    `json:"content" binding:"required,min=2,max=1000"`
 	Likes    int       `json:"likes" binding:"required,min=0"`

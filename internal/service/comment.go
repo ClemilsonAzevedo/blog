@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/repository"
-	"github.com/google/uuid"
+	"go.bryk.io/pkg/ulid"
 )
 
 type Comment = entities.Comment
@@ -26,11 +26,11 @@ func (s *CommentService) UpdateComment(comment *Comment) error {
 	return s.CommentRepository.UpdateComment(comment)
 }
 
-func (s *CommentService) DeleteComment(id uuid.UUID) error {
+func (s *CommentService) DeleteComment(id ulid.ULID) error {
 	return s.CommentRepository.DeleteComment(id)
 }
 
-func (s *CommentService) GetCommentByID(id uuid.UUID) (*Comment, error) {
+func (s *CommentService) GetCommentByID(id ulid.ULID) (*Comment, error) {
 	return s.CommentRepository.GetCommentByID(id)
 }
 
@@ -38,10 +38,10 @@ func (s *CommentService) GetAllComments() ([]*Comment, error) {
 	return s.CommentRepository.GetAllComments()
 }
 
-func (s *CommentService) GetCommentsByPostID(postID uuid.UUID) ([]*Comment, error) {
+func (s *CommentService) GetCommentsByPostID(postID ulid.ULID) ([]*Comment, error) {
 	return s.CommentRepository.GetCommentsByPostID(postID)
 }
 
-func (s *CommentService) GetCommentsByUserID(userID uuid.UUID) ([]*Comment, error) {
+func (s *CommentService) GetCommentsByUserID(userID ulid.ULID) ([]*Comment, error) {
 	return s.CommentRepository.GetCommentsByUserID(userID)
 }

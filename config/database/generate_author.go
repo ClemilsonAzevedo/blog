@@ -7,6 +7,7 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
 	"github.com/clemilsonazevedo/blog/internal/http/auth"
+	"go.bryk.io/pkg/ulid"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +33,9 @@ func CreateAuthor(db *gorm.DB) error {
 		return err
 	}
 
+	authorId, err := ulid.New()
 	author := entities.User{
+		ID:       authorId,
 		UserName: authorName,
 		Email:    authorEmail,
 		Password: hashpassword,

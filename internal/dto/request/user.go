@@ -2,7 +2,7 @@ package request
 
 import (
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
-	"github.com/google/uuid"
+	"go.bryk.io/pkg/ulid"
 )
 
 type UserRegister struct {
@@ -18,7 +18,7 @@ type UserLogin struct {
 }
 
 type UserUpdate struct {
-	ID       uuid.UUID  `json:"id" binding:"required,min=1"`
+	ID       ulid.ULID  `json:"id" binding:"required,min=1"`
 	UserName string     `json:"username" binding:"omitempty,min=2,max=100"`
 	Email    string     `json:"email" binding:"omitempty,email"`
 	Role     enums.Role `json:"role" binding:"required,oneof=anonymous reader author"`

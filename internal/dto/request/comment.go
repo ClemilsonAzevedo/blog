@@ -1,22 +1,22 @@
 package request
 
 import (
-	"github.com/google/uuid"
+	"go.bryk.io/pkg/ulid"
 )
 
 type CommentCreate struct {
-	UserID  uuid.UUID `json:"userId"`
-	PostID  uuid.UUID `json:"postId"`
+	UserID  ulid.ULID `json:"userId"`
+	PostID  ulid.ULID `json:"postId"`
 	Content string    `json:"content"`
 }
 
 type CommentUpdate struct {
-	ID      uuid.UUID `json:"id"`
-	UserID  uuid.UUID `json:"userId"`
-	PostID  uuid.UUID `json:"postId"`
+	ID      ulid.ULID `json:"id"`
+	UserID  ulid.ULID `json:"userId"`
+	PostID  ulid.ULID `json:"postId"`
 	Content string    `json:"content"`
 }
 
 type CommentDelete struct {
-	ID uuid.UUID `json:"id"`
+	ID ulid.ULID `json:"id"`
 }

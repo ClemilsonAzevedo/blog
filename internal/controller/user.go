@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
@@ -13,7 +12,7 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
+	"go.bryk.io/pkg/ulid"
 )
 
 type User = entities.User
@@ -63,7 +62,14 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userId, err := ulid.New()
+	if err != nil {
+		http.Error(w, "Cannot Generate ULID to this User", http.StatusInternalServerError)
+		return
+	}
+
 	user := entities.User{
+		ID:       userId,
 		UserName: data.UserName,
 		Email:    data.Email,
 		Password: hashedPassword,
@@ -139,18 +145,19 @@ func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	userIdStr := chi.URLParam(r, "id")
+	if userIdStr == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := uuid.Validate(id); err != nil {
+	userId, err := ulid.Parse(userIdStr)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	user, err := uc.service.GetUserByID(uuid.MustParse(id))
+	user, err := uc.service.GetUserByID(userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -248,13 +255,17 @@ func (uc *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	userIdStr := chi.URLParam(r, "id")
+	if userIdStr == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
 
-	userId := uuid.MustParse(id)
+	userId, err := ulid.Parse(userIdStr)
+	if err != nil {
+		http.Error(w, "Cannot Parse String to ULID", http.StatusBadRequest)
+		return
+	}
 
 	var dto request.UserUpdate
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
@@ -283,14 +294,14 @@ func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	if id == "" {
+	userIdStr := chi.URLParam(r, "id")
+	if userIdStr == "" {
 		http.Error(w, "ID is required", http.StatusBadRequest)
 		return
 	}
 
-	userId := uuid.MustParse(id)
-	if err := uc.service.DeleteUser(userId); err != nil {
+	userId, err := ulid.Parse(userIdStr)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

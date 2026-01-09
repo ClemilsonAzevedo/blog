@@ -6,8 +6,8 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/cache"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/repository"
-	"github.com/google/uuid"
 	"github.com/gosimple/slug"
+	"go.bryk.io/pkg/ulid"
 )
 
 type Post = entities.Post
@@ -59,7 +59,7 @@ func (s *PostService) UpdatePost(post *Post) error {
 	return nil
 }
 
-func (s *PostService) DeletePost(id uuid.UUID) error {
+func (s *PostService) DeletePost(id ulid.ULID) error {
 	post, _ := s.PostRepository.GetPostByID(id)
 	slug := ""
 	if post != nil {
@@ -75,7 +75,7 @@ func (s *PostService) DeletePost(id uuid.UUID) error {
 	return nil
 }
 
-func (s *PostService) GetPostByID(id uuid.UUID) (*Post, error) {
+func (s *PostService) GetPostByID(id ulid.ULID) (*Post, error) {
 	post, err := s.PostRepository.GetPostByID(id)
 	if err != nil {
 		return nil, err

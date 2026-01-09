@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
-	"github.com/google/uuid"
+	"go.bryk.io/pkg/ulid"
 )
 
 const (
@@ -34,12 +34,12 @@ func NewPostCache(ttl time.Duration) *PostCache {
 	}
 }
 
-func (pc *PostCache) GetByID(id uuid.UUID) (*entities.Post, bool) {
+func (pc *PostCache) GetByID(id ulid.ULID) (*entities.Post, bool) {
 	key := postByIDPrefix + id.String()
 	return pc.singlePostCache.Get(key)
 }
 
-func (pc *PostCache) SetByID(id uuid.UUID, post *entities.Post) {
+func (pc *PostCache) SetByID(id ulid.ULID, post *entities.Post) {
 	key := postByIDPrefix + id.String()
 	pc.singlePostCache.Set(key, post)
 }
@@ -75,7 +75,7 @@ func (pc *PostCache) SetPaginated(page, limit int, posts []entities.Post, total 
 	})
 }
 
-func (pc *PostCache) InvalidatePost(id uuid.UUID, slug string) {
+func (pc *PostCache) InvalidatePost(id ulid.ULID, slug string) {
 	pc.singlePostCache.Delete(postByIDPrefix + id.String())
 	if slug != "" {
 		pc.singlePostCache.Delete(postBySlugPrefix + slug)

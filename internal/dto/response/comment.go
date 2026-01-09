@@ -3,13 +3,13 @@ package response
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"go.bryk.io/pkg/ulid"
 )
 
 type CommentResponse struct {
-	ID        uuid.UUID `json:"id"`
-	UserID    uuid.UUID `json:"user_id"`
-	PostID    uuid.UUID `json:"post_id"`
+	ID        ulid.ULID `json:"id"`
+	UserID    ulid.ULID `json:"user_id"`
+	PostID    ulid.ULID `json:"post_id"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
 }
