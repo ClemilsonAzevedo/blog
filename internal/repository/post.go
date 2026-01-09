@@ -43,7 +43,6 @@ func (pr *PostRepository) GetPostBySlug(slug string) (*entities.Post, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &post, nil
 }
 
@@ -78,5 +77,6 @@ func (r *PostRepository) SlugExists(slug string) (bool, error) {
 	err := r.DB.Model(&entities.Post{}).
 		Where("slug = ?", slug).
 		Count(&count).Error
+
 	return count > 0, err
 }

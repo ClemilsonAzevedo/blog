@@ -2,19 +2,10 @@ package ai
 
 import (
 	"context"
-	"os"
 
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
 )
-
-func GetOpenAiKey() string {
-	api_key := os.Getenv("OPENAI_API_KEY")
-	if api_key == "" {
-		api_key = "your-openai-api-key-here"
-	}
-	return api_key
-}
 
 func GetOpenAiClient(api_key string) openai.Client {
 	client := openai.NewClient(

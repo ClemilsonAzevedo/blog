@@ -20,8 +20,8 @@ func CreateAuthor(db *gorm.DB) error {
 	}
 
 	var count int64
-	db.Model(entities.User{}).Where("email = ?", authorEmail).Count(&count)
 
+	db.Model(entities.User{}).Where("email = ?", authorEmail).Count(&count)
 	if count > 0 {
 		log.Println("Author already exists")
 		return nil

@@ -9,3 +9,11 @@ func GetJWTSecret() string {
 	}
 	return secret
 }
+
+func GetOpenAiKey() string {
+	api_key := os.Getenv("OPENAI_API_KEY")
+	if api_key == "" {
+		api_key = "your-openai-api-key-here"
+	}
+	return api_key
+}

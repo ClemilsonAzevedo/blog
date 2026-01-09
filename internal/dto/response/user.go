@@ -11,10 +11,10 @@ type UserLogin struct {
 }
 
 type UserByID struct {
-	ID       uuid.UUID `json:"id"`
-	UserName string `json:"username"`
-	Email    string `json:"email"`
-	Role     enums.Role    `json:"role" binding:"required,oneof=anonymous reader author"`
+	ID       uuid.UUID  `json:"id"`
+	UserName string     `json:"username"`
+	Email    string     `json:"email"`
+	Role     enums.Role `json:"role" binding:"required,oneof=anonymous reader author"`
 }
 
 type UserLogout struct {

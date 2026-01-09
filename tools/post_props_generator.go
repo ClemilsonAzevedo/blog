@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/clemilsonazevedo/blog/config/ai"
+	"github.com/clemilsonazevedo/blog/config/secret"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 )
 
@@ -12,7 +13,7 @@ func GeneratePropsOfContent(prompt string) response.AiResponse {
 	var output response.AiResponse
 	content := ""
 
-	open_ai_api_key := ai.GetOpenAiKey()
+	open_ai_api_key := secret.GetOpenAiKey()
 	client := ai.GetOpenAiClient(open_ai_api_key)
 	model := ai.GetOpenAiChatModel()
 	chatCompletion, err := ai.GenerateAChatCompletition(prompt, client, model)
