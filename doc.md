@@ -24,4 +24,3 @@
 - [x] Adicionar as hashtags no conteudo
 - [x] Mover o prompt da pasta ai
 - [x] Fazer verificação de campos vazios nas rotas/controllers
-- [ ] Trocar o content por criar um arquivo

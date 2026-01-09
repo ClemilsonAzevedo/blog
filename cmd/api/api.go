@@ -32,17 +32,17 @@ func InitServer() *chi.Mux {
 		log.Fatal("ERROR INITIALIZING DATABASE")
 	}
 
-	userRepo := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepo)
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
 	userController := controller.NewUserController(userService)
 
-	postRepo := repository.NewPostRepository(db)
+	postRepository := repository.NewPostRepository(db)
 	postCache := cache.NewPostCache(5 * time.Minute)
-	postService := service.NewPostService(postRepo, postCache)
+	postService := service.NewPostService(postRepository, postCache)
 	postController := controller.NewPostController(postService)
 
-	commentRepo := repository.NewCommentRepository(db)
-	commentService := service.NewCommentService(commentRepo)
+	commentRepository := repository.NewCommentRepository(db)
+	commentService := service.NewCommentService(commentRepository)
 	commentController := controller.NewCommentController(commentService)
 
 	//api routes
