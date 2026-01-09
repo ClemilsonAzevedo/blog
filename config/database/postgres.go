@@ -26,6 +26,13 @@ func NewPostgresConfig() (*gorm.DB, error) {
 	}
 
 	log.Println("DATABASE CONNECTED")
+
 	AutoMigrate(db)
+	MigrateRoleEnums(db)
+	AutoMigrate(db)
+
+	if err := CreateAuthor(db); err != nil {
+		log.Printf("It is not possible to create the author: %v", err)
+	}
 	return db, nil
 }

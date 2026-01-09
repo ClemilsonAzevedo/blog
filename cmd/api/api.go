@@ -3,15 +3,12 @@ package api
 import (
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/clemilsonazevedo/blog/config/database"
 	"github.com/clemilsonazevedo/blog/internal/cache"
 	"github.com/clemilsonazevedo/blog/internal/controller"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
-	"github.com/clemilsonazevedo/blog/internal/domain/enums"
-	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/http/middlewares"
 	"github.com/clemilsonazevedo/blog/internal/http/routes/private"
 	"github.com/clemilsonazevedo/blog/internal/http/routes/public"
@@ -19,7 +16,6 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"gorm.io/gorm"
 )
 
 type User = entities.User
@@ -34,12 +30,6 @@ func InitServer() *chi.Mux {
 	db, err := database.NewPostgresConfig()
 	if err != nil {
 		log.Fatal("ERROR INITIALIZING DATABASE")
-	}
-
-	database.MigrateRoleEnums(db)
-	database.AutoMigrate(db)
-	if err := CreateAuthor(db); err != nil {
-		log.Printf("It is not possible to create the author: %v", err)
 	}
 
 	userRepo := repository.NewUserRepository(db)
@@ -80,41 +70,4 @@ func InitServer() *chi.Mux {
 	})
 
 	return r
-}
-
-func CreateAuthor(db *gorm.DB) error {
-	authorName := os.Getenv("AUTHOR_NAME")
-	authorEmail := os.Getenv("AUTHOR_EMAIL")
-	authorPassword := os.Getenv("AUTHOR_PASSWORD")
-	if authorEmail == "" || authorPassword == "" || authorName == "" {
-		log.Println("UserName or Email or Password not configured!")
-		return nil
-	}
-
-	var count int64
-	db.Model(entities.User{}).Where("email = ?", authorEmail).Count(&count)
-
-	if count > 0 {
-		log.Println("Author already exists")
-		return nil
-	}
-
-	hashpassword, err := auth.HashPassword(authorPassword)
-	if err != nil {
-		return err
-	}
-
-	author := entities.User{
-		UserName: authorName,
-		Email:    authorEmail,
-		Password: hashpassword,
-		Role:     enums.Author,
-	}
-
-	if err := db.Create(&author).Error; err != nil {
-		return err
-	}
-
-	log.Printf("Author created: %s with success", authorEmail)
-	return nil
 }
