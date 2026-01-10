@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/clemilsonazevedo/blog/config/database"
+	_ "github.com/clemilsonazevedo/blog/docs"
 	"github.com/clemilsonazevedo/blog/internal/cache"
 	"github.com/clemilsonazevedo/blog/internal/controller"
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
@@ -16,7 +17,26 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+// @title Blog API
+// @version 1.0
+// @description REST API for a blog application with posts, comments, and user management.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.email support@blog.io
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
+// @host localhost:8080
+// @BasePath /api/v1
+
+// @securityDefinitions.apikey CookieAuth
+// @in cookie
+// @name token
 
 type User = entities.User
 type Post = entities.Post
@@ -44,6 +64,9 @@ func InitServer() *chi.Mux {
 	commentRepository := repository.NewCommentRepository(db)
 	commentService := service.NewCommentService(commentRepository)
 	commentController := controller.NewCommentController(commentService)
+
+	// Swagger UI route
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	//api routes
 	r.Route("/api/v1", func(v1 chi.Router) {

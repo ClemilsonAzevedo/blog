@@ -28,6 +28,19 @@ func NewUserController(service *service.UserService) *UserController {
 	}
 }
 
+// CreateUser godoc
+// @Summary Register a new user
+// @Description Creates a new user account with the provided credentials
+// @Tags Auth
+// @Accept json
+// @Produce plain
+// @Param request body request.UserRegister true "User registration data"
+// @Success 201 {string} string "User Created has successfully"
+// @Failure 400 {string} string "You need provide all credentials"
+// @Failure 400 {string} string "Password need 8 or more characters"
+// @Failure 409 {string} string "User Already Exists"
+// @Failure 500 {string} string "Cannot create user"
+// @Router /register [post]
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var data request.UserRegister
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
@@ -84,6 +97,18 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("User Created has successfully"))
 }
 
+// LoginUser godoc
+// @Summary Login user
+// @Description Authenticates a user and sets a JWT token in an HTTP-only cookie
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body request.UserLogin true "User login credentials"
+// @Success 200 {string} string "Login successful - token set in cookie"
+// @Failure 400 {string} string "Email and Password are Required"
+// @Failure 400 {string} string "Email or Password is incorrect"
+// @Header 200 {string} Set-Cookie "token=<jwt>; Path=/; HttpOnly; SameSite=Lax"
+// @Router /login [post]
 func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	var data request.UserLogin
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
@@ -130,6 +155,14 @@ func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// Logout godoc
+// @Summary Logout user
+// @Description Clears the authentication cookie and logs out the user
+// @Tags Auth
+// @Produce json
+// @Success 200 {object} response.UserLogout "Logout successful"
+// @Security CookieAuth
+// @Router /logout [post]
 func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
@@ -144,6 +177,17 @@ func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"message":"logout successful"}`))
 }
 
+// GetUserById godoc
+// @Summary Get user by ID
+// @Description Retrieves a user by their ULID
+// @Tags Users
+// @Produce json
+// @Param id path string true "User ULID"
+// @Success 200 {object} response.UserByID
+// @Failure 400 {string} string "ID is required"
+// @Failure 500 {string} string "Error retrieving user"
+// @Security CookieAuth
+// @Router /user/{id} [get]
 func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	userIdStr := chi.URLParam(r, "id")
 	if userIdStr == "" {
@@ -175,6 +219,15 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// Profile godoc
+// @Summary Get current user profile
+// @Description Retrieves the profile of the currently authenticated user
+// @Tags Users
+// @Produce json
+// @Success 200 {object} response.UserByID
+// @Failure 401 {string} string "unauthorized"
+// @Security CookieAuth
+// @Router /profile [get]
 func (uc *UserController) Profile(w http.ResponseWriter, r *http.Request) {
 	user, ok := r.Context().Value("user").(*entities.User)
 	if !ok {
@@ -194,6 +247,17 @@ func (uc *UserController) Profile(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// GetUserByEmail godoc
+// @Summary Get user by email
+// @Description Retrieves a user by their email address
+// @Tags Users
+// @Produce json
+// @Param email query string true "User email"
+// @Success 200 {object} response.UserByID
+// @Failure 400 {string} string "Email is required"
+// @Failure 500 {string} string "Error retrieving user"
+// @Security CookieAuth
+// @Router /user [get]
 func (uc *UserController) GetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	email := r.URL.Query().Get("email")
 	if email == "" {
@@ -218,6 +282,17 @@ func (uc *UserController) GetUserByEmail(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(response)
 }
 
+// GetUserByName godoc
+// @Summary Get user by name
+// @Description Retrieves a user by their username
+// @Tags Users
+// @Produce json
+// @Param name query string true "Username"
+// @Success 200 {object} response.UserByID
+// @Failure 400 {string} string "Name is required"
+// @Failure 500 {string} string "Error retrieving user"
+// @Security CookieAuth
+// @Router /user/name [get]
 func (uc *UserController) GetUserByName(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name == "" {
@@ -242,6 +317,15 @@ func (uc *UserController) GetUserByName(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(response)
 }
 
+// GetAllUsers godoc
+// @Summary Get all users
+// @Description Retrieves a list of all users (Author role required)
+// @Tags Users
+// @Produce json
+// @Success 200 {array} entities.User
+// @Failure 500 {string} string "Error retrieving users"
+// @Security CookieAuth
+// @Router /users [get]
 func (uc *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := uc.service.GetAllUsers()
 	if err != nil {
@@ -254,6 +338,20 @@ func (uc *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
+// UpdateUser godoc
+// @Summary Update user profile
+// @Description Updates the currently authenticated user's profile
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ULID"
+// @Param request body request.UserUpdate true "User update data"
+// @Success 200 {object} response.UserByID
+// @Failure 400 {string} string "ID is required"
+// @Failure 400 {string} string "Cannot Parse String to ULID"
+// @Failure 500 {string} string "Error updating user"
+// @Security CookieAuth
+// @Router /profile [put]
 func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userIdStr := chi.URLParam(r, "id")
 	if userIdStr == "" {
@@ -293,6 +391,17 @@ func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DeleteUser godoc
+// @Summary Delete user profile
+// @Description Deletes the currently authenticated user's account
+// @Tags Users
+// @Produce json
+// @Param id path string true "User ULID"
+// @Success 200 {object} response.UserByID
+// @Failure 400 {string} string "ID is required"
+// @Failure 500 {string} string "Error deleting user"
+// @Security CookieAuth
+// @Router /profile [delete]
 func (uc *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userIdStr := chi.URLParam(r, "id")
 	if userIdStr == "" {

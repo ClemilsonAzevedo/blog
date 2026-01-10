@@ -26,6 +26,18 @@ func NewPostController(service *service.PostService) *PostController {
 	}
 }
 
+// CreatePost godoc
+// @Summary Create a new post
+// @Description Creates a new blog post (Author role required)
+// @Tags Posts
+// @Accept json
+// @Produce json
+// @Param request body request.PostCreate true "Post creation data"
+// @Success 201 {string} string "Post created"
+// @Failure 400 {string} string "You need set Content and AuthorId to create a post"
+// @Failure 500 {string} string "Cannot create post"
+// @Security CookieAuth
+// @Router /post [post]
 func (pc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 	var dto request.PostCreate
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
@@ -60,6 +72,18 @@ func (pc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// CreatePostWithAi godoc
+// @Summary Create a post with AI-generated title and hashtags
+// @Description Creates a new blog post with AI-generated title and hashtags from content (Author role required)
+// @Tags Posts, AI
+// @Accept json
+// @Produce json
+// @Param request body request.AiPostCreate true "AI post creation data"
+// @Success 201 {string} string "Post created"
+// @Failure 400 {string} string "You need set Content and AuthorId to create a post"
+// @Failure 500 {string} string "Cannot create post"
+// @Security CookieAuth
+// @Router /post-with-ai [post]
 func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Request) {
 	var dto request.AiPostCreate
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
@@ -95,6 +119,17 @@ func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusCreated)
 }
 
+// GetPostById godoc
+// @Summary Get post by ID
+// @Description Retrieves a single post by its ULID
+// @Tags Posts
+// @Produce json
+// @Param id path string true "Post ULID"
+// @Success 200 {object} response.PostResponse
+// @Failure 400 {string} string "ID is required"
+// @Failure 400 {string} string "Cannot parse Id of Post"
+// @Failure 500 {string} string "Error retrieving post"
+// @Router /post/{id} [get]
 func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	postIdStr := chi.URLParam(r, "id")
 	if postIdStr == "" {
@@ -131,6 +166,16 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// GetPostBySlug godoc
+// @Summary Get post by slug
+// @Description Retrieves a single post by its URL slug
+// @Tags Posts
+// @Produce json
+// @Param slug path string true "Post slug"
+// @Success 200 {object} response.PostResponse
+// @Failure 400 {string} string "Slug is required"
+// @Failure 500 {string} string "Error retrieving post"
+// @Router /post/slug/{slug} [get]
 func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
 	if slug == "" {
@@ -160,6 +205,14 @@ func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(response)
 }
 
+// GetAllPosts godoc
+// @Summary Get all posts
+// @Description Retrieves all blog posts
+// @Tags Posts
+// @Produce json
+// @Success 200 {array} entities.Post
+// @Failure 500 {string} string "Error retrieving posts"
+// @Router /posts/all [get]
 func (uc *PostController) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	posts, err := uc.service.GetAllPosts()
 	if err != nil {
@@ -172,6 +225,18 @@ func (uc *PostController) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(posts)
 }
 
+// GetPaginatedPosts godoc
+// @Summary Get paginated posts
+// @Description Retrieves a paginated list of blog posts
+// @Tags Posts
+// @Produce json
+// @Param page query int true "Page number (default: 1)"
+// @Param limit query int true "Number of posts per page (default: 10, max: 100)"
+// @Success 200 {object} map[string]interface{} "Returns data array and meta object with pagination info"
+// @Failure 400 {string} string "Page is required"
+// @Failure 400 {string} string "Limit is required"
+// @Failure 500 {string} string "Error retrieving posts"
+// @Router /posts [get]
 func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Request) {
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	if err != nil {
@@ -224,6 +289,19 @@ func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(response)
 }
 
+// UpdatePost godoc
+// @Summary Update a post
+// @Description Updates an existing blog post (Author role required)
+// @Tags Posts
+// @Accept json
+// @Produce json
+// @Param id path string true "Post ULID"
+// @Param request body request.PostUpdate true "Post update data"
+// @Success 200 {object} response.PostResponse
+// @Failure 400 {string} string "ID is required"
+// @Failure 500 {string} string "Error updating post"
+// @Security CookieAuth
+// @Router /post/{id} [put]
 func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	postIdStr := chi.URLParam(r, "id")
 	if postIdStr == "" {
@@ -273,6 +351,16 @@ func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// DeletePost godoc
+// @Summary Delete a post
+// @Description Deletes an existing blog post (Author role required)
+// @Tags Posts
+// @Param id path string true "Post ULID"
+// @Success 204 {string} string "No Content"
+// @Failure 400 {string} string "ID is required"
+// @Failure 500 {string} string "Error deleting post"
+// @Security CookieAuth
+// @Router /post/{id} [delete]
 func (uc *PostController) DeletePost(w http.ResponseWriter, r *http.Request) {
 	postIdStr := chi.URLParam(r, "id")
 	if postIdStr == "" {

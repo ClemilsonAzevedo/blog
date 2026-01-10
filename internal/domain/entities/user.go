@@ -11,11 +11,11 @@ import (
 type Role = enums.Role
 
 type User struct {
-	ID        ulid.ULID `gorm:"column:id;primaryKey;type:VARCHAR(26);not null" json:"id"`
+	ID        ulid.ULID `gorm:"column:id;primaryKey;type:VARCHAR(26);not null" json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 	UserName  string    `gorm:"column:username;unique;not null;" json:"username"`
 	Email     string    `gorm:"column:email;unique;not null;" json:"email"`
 	Password  string    `gorm:"column:password;not null" json:"password"`
-	Role      Role      `gorm:"type:user_role;default:'reader'" json:"role"`
+	Role      Role      `gorm:"type:user_role;default:'reader'" json:"role" swaggertype:"string" enums:"anonymous,reader,author"`
 	CreatedAt time.Time `gorm:"column:created_at;not null,autoCreateTime" json:"created_at"`
 
 	// Posts []Post `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
