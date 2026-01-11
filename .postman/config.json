@@ -1,0 +1,19 @@
+{
+  "workspace": {
+    "id": "f4499b91-7a2d-4ec1-871b-9e285530cdea"
+  },
+  "entities": {
+    "collections": [
+      "../postman/collections/Clema Blog API.postman_collection.json"
+    ],
+    "environments": [
+      "../postman/environments/BLOG API ENV.postman_environment.json"
+    ],
+    "specs": [
+      "../docs/swagger.json",
+      "../docs/swagger.yaml"
+    ],
+    "flows": [],
+    "globals": []
+  }
+}

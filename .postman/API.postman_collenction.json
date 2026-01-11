@@ -1,0 +1,986 @@
+{
+  "info": {
+    "_postman_id": "7dba16f8-36f8-47db-8e71-997c71f1163e",
+    "name": "Clema Blog API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "PUBLIC ROUTES",
+      "item": [
+        {
+          "name": "Posts",
+          "item": [
+            {
+              "name": "Get All Posts",
+              "id": "b773d40c-864a-4c4e-87d4-3049dd38cb0d",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/posts?page=1&limit=10",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "posts"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Post By Id",
+              "id": "a46d9bd1-e0d4-4417-a91b-cc954bdafe8b",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/posts/01KEJ2SG4DSF2XHFKPV4N5CBS1",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "posts",
+                    "01KEJ2SG4DSF2XHFKPV4N5CBS1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "id": "fc34ff53-6e48-4ffc-964c-12fbe522664d"
+        },
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "user login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "0c98a7b5-5d5b-496d-9da2-ffc706563889",
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "4b53a12d-aacf-4008-a4ad-01ae0f1c320d",
+                    "exec": [
+                      "const COOKIE_NAME = \"token\";",
+                      "",
+                      "const cookies = pm.cookies.toObject();",
+                      "",
+                      "if (cookies[COOKIE_NAME]) {",
+                      "  pm.environment.set(\"auth_token\", cookies[COOKIE_NAME]);",
+                      "  console.log(\"Token salvo:\", cookies[COOKIE_NAME]);",
+                      "} else {",
+                      "  console.warn(\"Cookie não encontrado\");",
+                      "}",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "id": "bb713857-64a9-465e-a1e2-903cbd2b41de",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"clema@email.com\",\n    \"password\": \"clema123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/login",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "member register",
+              "id": "4f68b5d3-d062-4164-816b-7728ed1a53d9",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\" : {{$randomUserName}},\n    \"email\": {{$randomEmail}},\n    \"password\": {{$randomPassword}}\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/register",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "author login",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "ebc2af53-7407-4c20-9b4e-655340cf6288",
+                    "exec": [
+                      "const COOKIE_NAME = \"token\";",
+                      "",
+                      "const cookies = pm.cookies.toObject();",
+                      "",
+                      "if (cookies[COOKIE_NAME]) {",
+                      "  pm.environment.set(\"auth_token\", cookies[COOKIE_NAME]);",
+                      "  console.log(\"Token salvo:\", cookies[COOKIE_NAME]);",
+                      "} else {",
+                      "  console.warn(\"Cookie não encontrado\");",
+                      "}",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "id": "5c4e3496-8740-424a-9327-1772c2d71b7a",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\":\"newgod123@gmail.com\",\n    \"password\": \"god#123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/login",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "id": "1755fda1-7cd7-40d0-96fa-4f5eefc8e5fe"
+        },
+        {
+          "name": "Comments",
+          "item": [
+            {
+              "name": "Get Comments by Post Id",
+              "id": "d8b816c6-7710-4ad0-9490-bd440db5a3d4",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/comments/01KEJ2SG4DSF2XHFKPV4N5CBS1",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "comments",
+                    "01KEJ2SG4DSF2XHFKPV4N5CBS1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "id": "174dab05-5f48-4d81-afa4-9cad953d3b17"
+        }
+      ],
+      "id": "90d0af5c-c5a9-4818-b302-f95c61652734"
+    },
+    {
+      "name": "PRIVATE ROUTES",
+      "item": [
+        {
+          "name": "comments",
+          "item": [
+            {
+              "name": "Create comment",
+              "id": "41eba464-22ad-4bb7-9f9f-d4351cb63bab",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Cookie",
+                    "value": "token",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"content\":\"Conteudo do Comentário\",\n    \"user_id\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\",\n    \"post_id\" : \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/comments",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "comments"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "id": "db7a651d-13fc-4334-b038-33313ee767b3"
+        },
+        {
+          "name": "auth",
+          "item": [
+            {
+              "name": "user logout",
+              "id": "cbe91de8-4514-453b-bbcd-fdc0b8f6c510",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Cookie",
+                    "value": "token",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\":\"user@email.com\",\n    \"password\": \"user#123\"\n}"
+                },
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/logout",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "id": "f43815e5-b6af-4f2e-b09e-3d406a8c8191"
+        },
+        {
+          "name": "user",
+          "item": [
+            {
+              "name": "user profile",
+              "id": "2c5f6d5c-5b1f-4df5-a1d2-e7cb724c13c3",
+              "protocolProfileBehavior": {
+                "protocolVersion": "auto"
+              },
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Cookie",
+                    "value": "token",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/profiles",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "profiles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update profile",
+              "id": "397846df-c97d-479a-ad02-68747b716d81",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Cookie",
+                    "value": "token",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"user name\",\n    \"email\":\"user@email.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/profiles/01KEJ2SG4DSF2XHFKPV4N5CBS1",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "01KEJ2SG4DSF2XHFKPV4N5CBS1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete profile",
+              "id": "e6759479-8100-42c2-b541-c31069432805",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Cookie",
+                    "value": "token",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/profiles/01KEJ2SG4DSF2XHFKPV4N5CBS1",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "01KEJ2SG4DSF2XHFKPV4N5CBS1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "id": "44524087-c5bc-440f-9176-c92f0c612674"
+        }
+      ],
+      "id": "549f8732-9a14-46b3-bb43-cdccddaaae90"
+    },
+    {
+      "name": "Author Routes",
+      "item": [
+        {
+          "name": "Create post",
+          "id": "7d0d74b3-8924-4a72-bc0e-aacd6cd1ed9a",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Conteudo do post para gerar o titulo\",\n    \"content\": \"Conteudo do post para gerar o titulo\",\n    \"user_id\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL_V1}}/posts",
+              "host": [
+                "{{BASE_URL_V1}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Title and Hashtags with post content",
+          "id": "719397b8-f9c1-464f-977b-b6cbc8c77ce6",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token=",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"content\": \"Conteudo do post para gerar o titulo\",\n    \"user_id\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL_V1}}/posts-with-ai",
+              "host": [
+                "{{BASE_URL_V1}}"
+              ],
+              "path": [
+                "posts-with-ai"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Post",
+          "id": "1382989e-704a-4c72-9fa2-19b85785cc1c",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL_V1}}/posts/01KEJ2SG4DSF2XHFKPV4N5CBS1",
+              "host": [
+                "{{BASE_URL_V1}}"
+              ],
+              "path": [
+                "posts",
+                "01KEJ2SG4DSF2XHFKPV4N5CBS1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update post",
+          "id": "35c2540c-bf6c-4055-991b-340b95c79be2",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Conteudo do post para gerar o titulo\",\n    \"content\": \"Conteudo do post para gerar o titulo\",\n    \"user_id\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL_V1}}/posts/01KEJ2SG4DSF2XHFKPV4N5CBS1",
+              "host": [
+                "{{BASE_URL_V1}}"
+              ],
+              "path": [
+                "posts",
+                "01KEJ2SG4DSF2XHFKPV4N5CBS1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get all users",
+          "id": "5b38bc1f-70c1-429a-9abd-b45ca7b2fe9b",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"content\": \"Conteudo do post para gerar o titulo\",\n    \"user_id\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL_V1}}/users",
+              "host": [
+                "{{BASE_URL_V1}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get user by id",
+          "id": "e29bd8d0-6bdf-4548-b857-5bc80fbd97da",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL_V1}}/users/01KEHK9NP9V1VE5W8NABKX4Q6C",
+              "host": [
+                "{{BASE_URL_V1}}"
+              ],
+              "path": [
+                "users",
+                "01KEHK9NP9V1VE5W8NABKX4Q6C"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "abafbf64-e01f-42de-a021-1fdbeb8789f7"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {
+          "buffer": {
+            "src": "./node_modules/buffer/index.js",
+            "name": "buffer"
+          },
+          "crypto-js": {
+            "src": "./node_modules/crypto-js/crypto-js.js",
+            "name": "crypto-js"
+          },
+          "events": {
+            "src": "./node_modules/events/events.js",
+            "name": "events"
+          },
+          "chai": {
+            "src": "./node_modules/chai/chai.js",
+            "name": "chai"
+          },
+          "postman-collection": {
+            "src": "./node_modules/postman-collection/index.js",
+            "name": "postman-collection"
+          },
+          "atob": {
+            "src": "./node_modules/atob/browser-atob.js",
+            "name": "atob"
+          },
+          "uuid": {
+            "src": "./node_modules/uuid/dist/umd/uuid.min.js",
+            "name": "uuid"
+          },
+          "xml2js": {
+            "src": "./node_modules/xml2js/lib/xml2js.js",
+            "name": "xml2js"
+          },
+          "lodash": {
+            "src": "./node_modules/lodash/lodash.js",
+            "name": "lodash"
+          },
+          "csv-parse": {
+            "src": "./node_modules/csv-parse/dist/umd/sync.js",
+            "name": "csv-parse"
+          },
+          "tv4": {
+            "src": "./node_modules/tv4/tv4.js",
+            "name": "tv4"
+          },
+          "forge-apis": {
+            "src": "./node_modules/forge-apis/src/index.js",
+            "name": "forge-apis"
+          },
+          "ajv": {
+            "src": "./node_modules/ajv/dist/ajv.bundle.js",
+            "name": "ajv"
+          },
+          "sinon": {
+            "src": "./node_modules/sinon/pkg/sinon.js",
+            "name": "sinon"
+          },
+          "oboe": {
+            "src": "./node_modules/oboe/dist/oboe-browser.js",
+            "name": "oboe"
+          },
+          "bitcoinjs-lib": {
+            "src": "./node_modules/bitcoinjs-lib/dist/bitcoinjs-lib.js",
+            "name": "bitcoinjs-lib"
+          },
+          "crypto-js/package.json/": {
+            "src": "./node_modules/crypto-js/package.json",
+            "name": "crypto-js/package.json/"
+          },
+          "uri-template": {
+            "src": "./node_modules/uri-template/lib/uri-template.js",
+            "name": "uri-template"
+          },
+          "chai-postman": {
+            "src": "./node_modules/chai-postman/index.js",
+            "name": "chai-postman"
+          },
+          "stream": {
+            "src": "./node_modules/stream-http/node_modules/readable-stream/readable-browser.js",
+            "name": "stream"
+          },
+          "tv4/package.json/": {
+            "src": "./node_modules/tv4/package.json",
+            "name": "tv4/package.json/"
+          },
+          "Buffer": {
+            "src": "./node_modules/buffer/index.js",
+            "name": "Buffer"
+          },
+          "assert": {
+            "src": "./node_modules/assert/build/assert.js",
+            "name": "assert"
+          },
+          "xml2js/package.json/": {
+            "src": "./node_modules/xml2js/package.json",
+            "name": "xml2js/package.json/"
+          },
+          "csv-parse/package.json/": {
+            "src": "./node_modules/csv-parse/packagejson",
+            "name": "csv-parse/package.json/"
+          },
+          "sinon-chai": {
+            "src": "./node_modules/sinon-chai/lib/sinon-chai.js",
+            "name": "sinon-chai"
+          },
+          "ajv/package.json/": {
+            "src": "./node_modules/ajv/package.json",
+            "name": "ajv/package.json/"
+          },
+          "chai/package.json/": {
+            "src": "./node_modules/chai/package.json",
+            "name": "chai/package.json/"
+          },
+          "path": {
+            "src": "./node_modules/path/path.js",
+            "name": "path"
+          },
+          "postman-collection/package.json/": {
+            "src": "./node_modules/postman-collection/package.json",
+            "name": "postman-collection/package.json/"
+          },
+          "csv": {
+            "src": "./node_modules/csv/dist/cjs/sync.js",
+            "name": "csv"
+          },
+          "events/package.json/": {
+            "src": "./node_modules/events/package.json",
+            "name": "events/package.json/"
+          },
+          "uuid/package.json/": {
+            "src": "./node_modules/uuid/package.json",
+            "name": "uuid/package.json/"
+          },
+          "urijs": {
+            "src": "./node_modules/urijs/src/URI.js",
+            "name": "urijs"
+          },
+          "atob/package.json/": {
+            "src": "./node_modules/atob/package.json",
+            "name": "atob/package.json/"
+          },
+          "csv/package.json/": {
+            "src": "./node_modules/csv/package.json",
+            "name": "csv/package.json/"
+          },
+          "forge-apis/package.json/": {
+            "src": "./node_modules/forge-apis/package.json",
+            "name": "forge-apis/package.json/"
+          },
+          "oboe/package.json/": {
+            "src": "./node_modules/oboe/package.json",
+            "name": "oboe/package.json/"
+          },
+          "chai-postman/package.json/": {
+            "src": "./node_modules/chai-postman/package.json",
+            "name": "chai-postman/package.json/"
+          },
+          "urijs/package.json/": {
+            "src": "./node_modules/urijs/package.json",
+            "name": "urijs/package.json/"
+          },
+          "bitcoinjs-lib/package.json/": {
+            "src": "./node_modules/bitcoinjs-lib/package.json",
+            "name": "bitcoinjs-lib/package.json/"
+          }
+        },
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {
+          "buffer": {
+            "src": "./node_modules/buffer/index.js",
+            "name": "buffer"
+          },
+          "crypto-js": {
+            "src": "./node_modules/crypto-js/crypto-js.js",
+            "name": "crypto-js"
+          },
+          "events": {
+            "src": "./node_modules/events/events.js",
+            "name": "events"
+          },
+          "chai": {
+            "src": "./node_modules/chai/chai.js",
+            "name": "chai"
+          },
+          "postman-collection": {
+            "src": "./node_modules/postman-collection/index.js",
+            "name": "postman-collection"
+          },
+          "atob": {
+            "src": "./node_modules/atob/browser-atob.js",
+            "name": "atob"
+          },
+          "uuid": {
+            "src": "./node_modules/uuid/dist/umd/uuid.min.js",
+            "name": "uuid"
+          },
+          "xml2js": {
+            "src": "./node_modules/xml2js/lib/xml2js.js",
+            "name": "xml2js"
+          },
+          "lodash": {
+            "src": "./node_modules/lodash/lodash.js",
+            "name": "lodash"
+          },
+          "csv-parse": {
+            "src": "./node_modules/csv-parse/dist/umd/sync.js",
+            "name": "csv-parse"
+          },
+          "tv4": {
+            "src": "./node_modules/tv4/tv4.js",
+            "name": "tv4"
+          },
+          "forge-apis": {
+            "src": "./node_modules/forge-apis/src/index.js",
+            "name": "forge-apis"
+          },
+          "ajv": {
+            "src": "./node_modules/ajv/dist/ajv.bundle.js",
+            "name": "ajv"
+          },
+          "sinon": {
+            "src": "./node_modules/sinon/pkg/sinon.js",
+            "name": "sinon"
+          },
+          "oboe": {
+            "src": "./node_modules/oboe/dist/oboe-browser.js",
+            "name": "oboe"
+          },
+          "bitcoinjs-lib": {
+            "src": "./node_modules/bitcoinjs-lib/dist/bitcoinjs-lib.js",
+            "name": "bitcoinjs-lib"
+          },
+          "crypto-js/package.json/": {
+            "src": "./node_modules/crypto-js/package.json",
+            "name": "crypto-js/package.json/"
+          },
+          "uri-template": {
+            "src": "./node_modules/uri-template/lib/uri-template.js",
+            "name": "uri-template"
+          },
+          "chai-postman": {
+            "src": "./node_modules/chai-postman/index.js",
+            "name": "chai-postman"
+          },
+          "stream": {
+            "src": "./node_modules/stream-http/node_modules/readable-stream/readable-browser.js",
+            "name": "stream"
+          },
+          "tv4/package.json/": {
+            "src": "./node_modules/tv4/package.json",
+            "name": "tv4/package.json/"
+          },
+          "Buffer": {
+            "src": "./node_modules/buffer/index.js",
+            "name": "Buffer"
+          },
+          "assert": {
+            "src": "./node_modules/assert/build/assert.js",
+            "name": "assert"
+          },
+          "xml2js/package.json/": {
+            "src": "./node_modules/xml2js/package.json",
+            "name": "xml2js/package.json/"
+          },
+          "csv-parse/package.json/": {
+            "src": "./node_modules/csv-parse/packagejson",
+            "name": "csv-parse/package.json/"
+          },
+          "sinon-chai": {
+            "src": "./node_modules/sinon-chai/lib/sinon-chai.js",
+            "name": "sinon-chai"
+          },
+          "ajv/package.json/": {
+            "src": "./node_modules/ajv/package.json",
+            "name": "ajv/package.json/"
+          },
+          "chai/package.json/": {
+            "src": "./node_modules/chai/package.json",
+            "name": "chai/package.json/"
+          },
+          "path": {
+            "src": "./node_modules/path/path.js",
+            "name": "path"
+          },
+          "postman-collection/package.json/": {
+            "src": "./node_modules/postman-collection/package.json",
+            "name": "postman-collection/package.json/"
+          },
+          "csv": {
+            "src": "./node_modules/csv/dist/cjs/sync.js",
+            "name": "csv"
+          },
+          "events/package.json/": {
+            "src": "./node_modules/events/package.json",
+            "name": "events/package.json/"
+          },
+          "uuid/package.json/": {
+            "src": "./node_modules/uuid/package.json",
+            "name": "uuid/package.json/"
+          },
+          "urijs": {
+            "src": "./node_modules/urijs/src/URI.js",
+            "name": "urijs"
+          },
+          "atob/package.json/": {
+            "src": "./node_modules/atob/package.json",
+            "name": "atob/package.json/"
+          },
+          "csv/package.json/": {
+            "src": "./node_modules/csv/package.json",
+            "name": "csv/package.json/"
+          },
+          "forge-apis/package.json/": {
+            "src": "./node_modules/forge-apis/package.json",
+            "name": "forge-apis/package.json/"
+          },
+          "oboe/package.json/": {
+            "src": "./node_modules/oboe/package.json",
+            "name": "oboe/package.json/"
+          },
+          "chai-postman/package.json/": {
+            "src": "./node_modules/chai-postman/package.json",
+            "name": "chai-postman/package.json/"
+          },
+          "urijs/package.json/": {
+            "src": "./node_modules/urijs/package.json",
+            "name": "urijs/package.json/"
+          },
+          "bitcoinjs-lib/package.json/": {
+            "src": "./node_modules/bitcoinjs-lib/package.json",
+            "name": "bitcoinjs-lib/package.json/"
+          }
+        },
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

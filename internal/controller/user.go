@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -44,6 +45,8 @@ func NewUserController(service *service.UserService) *UserController {
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var data request.UserRegister
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		fmt.Fprintf(w, "%v", err)
+
 		http.Error(w, "Cannot decode body", http.StatusInternalServerError)
 		return
 	}
@@ -129,7 +132,7 @@ func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	isPasswordEquals := auth.CheckPassword(authUser.Password, data.Password)
 	if !isPasswordEquals {
-		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
+		http.Error(w, "Email or Password is incorrectu", http.StatusBadRequest)
 		return
 	}
 

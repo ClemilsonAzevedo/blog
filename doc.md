@@ -24,3 +24,11 @@
 - [x] Adicionar as hashtags no conteudo
 - [x] Mover o prompt da pasta ai
 - [x] Fazer verificação de campos vazios nas rotas/controllers
+- [x] Criar collection de todas as rotas no Postman
+- [ ] Corrigir Rotas
+- [ ] Verificar se o Post existe ao buscar post por id
+- [ ] Verificar se o Post existe ao buscar commentario por id do post
+- [ ] Testar e corrigir todas as rotas apos a troca do UUID por ULID
+- [ ] Fazer feature de criar um post com apenas um link
+  - [ ] Gerar resumo, titulo e hashtags e postar colocando o link no fim
+- [ ] Mandar email de confirmacao do usuario
