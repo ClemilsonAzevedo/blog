@@ -4,10 +4,10 @@
   },
   "entities": {
     "collections": [
-      "../postman/collections/Clema Blog API.postman_collection.json"
+      "./postman/collections/Clema Blog API.postman_collection.json"
     ],
     "environments": [
-      "../postman/environments/BLOG API ENV.postman_environment.json"
+      "./postman/environments/BLOG API ENV.postman_environment.json"
     ],
     "specs": [
       "../docs/swagger.json",

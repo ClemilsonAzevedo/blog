@@ -28,11 +28,13 @@
                   "query": [
                     {
                       "key": "page",
-                      "value": "1"
+                      "value": "1",
+                      "uuid": "15ffea2b-bd15-46e3-ae7e-e5275ca8edc9"
                     },
                     {
                       "key": "limit",
-                      "value": "10"
+                      "value": "10",
+                      "uuid": "f38965d8-c053-4f62-b4a9-c373d2855809"
                     }
                   ]
                 }
@@ -138,7 +140,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"name\" : {{$randomUserName}},\n    \"email\": {{$randomEmail}},\n    \"password\": {{$randomPassword}}\n}",
+                  "raw": "{\n    \"username\" : \"clemaaz\",\n    \"email\": \"clema@email.com\",\n    \"password\": \"clema123\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
