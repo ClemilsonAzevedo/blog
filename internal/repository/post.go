@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
-	"go.bryk.io/pkg/ulid"
+	"github.com/clemilsonazevedo/blog/pkg"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -23,11 +23,11 @@ func (pr *PostRepository) UpdatePost(Post *entities.Post) error {
 	return pr.DB.Save(Post).Error
 }
 
-func (pr *PostRepository) DeletePost(id ulid.ULID) error {
+func (pr *PostRepository) DeletePost(id pkg.ULID) error {
 	return pr.DB.Delete(&entities.Post{}, id).Error
 }
 
-func (pr *PostRepository) GetPostByID(postId ulid.ULID) (*entities.Post, error) {
+func (pr *PostRepository) GetPostByID(postId pkg.ULID) (*entities.Post, error) {
 	var Post entities.Post
 	err := pr.DB.Model(&entities.Post{}).Where("id = ?", postId).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&Post).Error
 	if err != nil {

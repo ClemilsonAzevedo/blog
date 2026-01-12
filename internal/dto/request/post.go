@@ -1,26 +1,26 @@
 package request
 
-import "go.bryk.io/pkg/ulid"
+import "github.com/clemilsonazevedo/blog/pkg"
 
 type PostCreate struct {
-	Title    string    `json:"title" binding:"required,min=2,max=100"`
-	Content  string    `json:"content" binding:"required,min=2,max=1000"`
-	Likes    int       `json:"likes" binding:"required,min=0"`
-	Dislikes int       `json:"dislikes" binding:"required,min=0"`
-	UserID   ulid.ULID `json:"userId" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	Title    string   `json:"title" binding:"required,min=2,max=100"`
+	Content  string   `json:"content" binding:"required,min=2,max=1000"`
+	Likes    int      `json:"likes" binding:"required,min=0"`
+	Dislikes int      `json:"dislikes" binding:"required,min=0"`
+	UserID   pkg.ULID `json:"userId" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 }
 
 type AiPostCreate struct {
-	Content string    `json:"content" binding:"required,min=2,max=1000"`
-	UserID  ulid.ULID `json:"userId" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	Content string   `json:"content" binding:"required,min=2,max=1000"`
+	UserID  pkg.ULID `json:"userId" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 }
 
 type PostUpdate struct {
-	ID       ulid.ULID `json:"id" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
-	Title    string    `json:"title" binding:"required,min=2,max=100"`
-	Content  string    `json:"content" binding:"required,min=2,max=1000"`
-	Likes    int       `json:"likes" binding:"required,min=0"`
-	Dislikes int       `json:"dislikes" binding:"required,min=0"`
+	ID       pkg.ULID `json:"id" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	Title    string   `json:"title" binding:"required,min=2,max=100"`
+	Content  string   `json:"content" binding:"required,min=2,max=1000"`
+	Likes    int      `json:"likes" binding:"required,min=0"`
+	Dislikes int      `json:"dislikes" binding:"required,min=0"`
 }
 
 type PostDelete struct {

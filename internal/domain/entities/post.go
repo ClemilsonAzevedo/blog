@@ -3,11 +3,11 @@ package entities
 import (
 	"time"
 
-	"go.bryk.io/pkg/ulid"
+	"github.com/clemilsonazevedo/blog/pkg"
 )
 
 type Post struct {
-	ID        ulid.ULID `gorm:"column:id;primaryKey;type:VARCHAR(26);not null" json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	ID        pkg.ULID  `gorm:"column:id;primaryKey;type:varchar(26);not null" json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 	Title     string    `gorm:"column:title;index;not null" json:"title"`
 	Content   string    `gorm:"column:content;not null" json:"content"`
 	Slug      string    `gorm:"uniqueIndex:idx_posts_slug;not null;size:300;" json:"slug"`
@@ -15,7 +15,7 @@ type Post struct {
 	Views     int       `gorm:"column:views;not null;default:0" json:"views"`
 	Dislikes  int       `gorm:"column:dislikes;not null;default:0" json:"dislikes"`
 	CreatedAt time.Time `gorm:"column:created_at;not null;autoCreateTime" json:"created_at"`
-	UserID    ulid.ULID `gorm:"column:user_id;index;not null" json:"user_id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	UserID    pkg.ULID  `gorm:"column:user_id;index;not null" json:"user_id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 
 	User User `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
 }

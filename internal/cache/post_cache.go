@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
-	"go.bryk.io/pkg/ulid"
+	"github.com/clemilsonazevedo/blog/pkg"
 )
 
 const (
@@ -34,12 +34,12 @@ func NewPostCache(ttl time.Duration) *PostCache {
 	}
 }
 
-func (pc *PostCache) GetByID(id ulid.ULID) (*entities.Post, bool) {
+func (pc *PostCache) GetByID(id pkg.ULID) (*entities.Post, bool) {
 	key := postByIDPrefix + id.String()
 	return pc.singlePostCache.Get(key)
 }
 
-func (pc *PostCache) SetByID(id ulid.ULID, post *entities.Post) {
+func (pc *PostCache) SetByID(id pkg.ULID, post *entities.Post) {
 	key := postByIDPrefix + id.String()
 	pc.singlePostCache.Set(key, post)
 }
@@ -75,7 +75,7 @@ func (pc *PostCache) SetPaginated(page, limit int, posts []entities.Post, total 
 	})
 }
 
-func (pc *PostCache) InvalidatePost(id ulid.ULID, slug string) {
+func (pc *PostCache) InvalidatePost(id pkg.ULID, slug string) {
 	pc.singlePostCache.Delete(postByIDPrefix + id.String())
 	if slug != "" {
 		pc.singlePostCache.Delete(postBySlugPrefix + slug)

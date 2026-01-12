@@ -12,8 +12,8 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/service"
+	"github.com/clemilsonazevedo/blog/pkg"
 	"github.com/go-chi/chi/v5"
-	"go.bryk.io/pkg/ulid"
 )
 
 type User = entities.User
@@ -78,7 +78,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, err := ulid.New()
+	userId, err := pkg.NewULID()
 	if err != nil {
 		http.Error(w, "Cannot Generate ULID to this User", http.StatusInternalServerError)
 		return
@@ -126,13 +126,14 @@ func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	authUser, err := uc.service.GetUserByEmail(data.Email)
 	if err != nil {
-		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
+		fmt.Fprintf(w, "%v", err)
+		http.Error(w, "Email or Password is incorrectu", http.StatusBadRequest)
 		return
 	}
 
 	isPasswordEquals := auth.CheckPassword(authUser.Password, data.Password)
 	if !isPasswordEquals {
-		http.Error(w, "Email or Password is incorrectu", http.StatusBadRequest)
+		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
 		return
 	}
 
@@ -198,7 +199,7 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, err := ulid.Parse(userIdStr)
+	userId, err := pkg.ParseULID(userIdStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -362,7 +363,7 @@ func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, err := ulid.Parse(userIdStr)
+	userId, err := pkg.ParseULID(userIdStr)
 	if err != nil {
 		http.Error(w, "Cannot Parse String to ULID", http.StatusBadRequest)
 		return
@@ -412,7 +413,7 @@ func (uc *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, err := ulid.Parse(userIdStr)
+	userId, err := pkg.ParseULID(userIdStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

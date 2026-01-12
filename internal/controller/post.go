@@ -13,7 +13,6 @@ import (
 	"github.com/clemilsonazevedo/blog/pkg"
 	"github.com/clemilsonazevedo/blog/tools"
 	"github.com/go-chi/chi/v5"
-	"go.bryk.io/pkg/ulid"
 )
 
 type PostController struct {
@@ -50,7 +49,7 @@ func (pc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postId, err := ulid.New()
+	postId, err := pkg.NewULID()
 	if err != nil {
 		http.Error(w, "Cannot Generate ULID to this Post", http.StatusInternalServerError)
 		return
@@ -98,7 +97,7 @@ func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Reques
 
 	aiRes := tools.GeneratePropsOfContent(dto.Content)
 
-	aiPostId, err := ulid.New()
+	aiPostId, err := pkg.NewULID()
 	if err != nil {
 		http.Error(w, "Cannot Generate ULID to this Post", http.StatusInternalServerError)
 		return
@@ -137,7 +136,7 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postId, err := ulid.Parse(postIdStr)
+	postId, err := pkg.ParseULID(postIdStr)
 	if err != nil {
 		http.Error(w, "Cannot parse Id of Post", http.StatusBadRequest)
 		return
@@ -309,7 +308,7 @@ func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postId, err := ulid.Parse(postIdStr)
+	postId, err := pkg.ParseULID(postIdStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -368,7 +367,7 @@ func (uc *PostController) DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postId, err := ulid.Parse(postIdStr)
+	postId, err := pkg.ParseULID(postIdStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

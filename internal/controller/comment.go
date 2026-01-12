@@ -8,8 +8,8 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/service"
+	"github.com/clemilsonazevedo/blog/pkg"
 	"github.com/go-chi/chi/v5"
-	"go.bryk.io/pkg/ulid"
 )
 
 type CommentController struct {
@@ -46,7 +46,7 @@ func (cc *CommentController) CreateComment(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	commentId, err := ulid.New()
+	commentId, err := pkg.NewULID()
 	if err != nil {
 		http.Error(w, "Cannot Generate ULID to this Comment", http.StatusInternalServerError)
 		return
@@ -84,7 +84,7 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	id, err := ulid.Parse(idStr)
+	id, err := pkg.ParseULID(idStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -126,7 +126,7 @@ func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	postId, err := ulid.Parse(postIdStr)
+	postId, err := pkg.ParseULID(postIdStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -161,7 +161,7 @@ func (cc *CommentController) GetCommentByUserID(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	userId, err := ulid.Parse(userIdStr)
+	userId, err := pkg.ParseULID(userIdStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -195,7 +195,7 @@ func (cc *CommentController) GetCommentsByPostID(w http.ResponseWriter, r *http.
 		return
 	}
 
-	postId, err := ulid.Parse(postIdStr)
+	postId, err := pkg.ParseULID(postIdStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -229,7 +229,7 @@ func (cc *CommentController) DeleteComment(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	commentId, err := ulid.Parse(commentIdStr)
+	commentId, err := pkg.ParseULID(commentIdStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -269,7 +269,7 @@ func (cc *CommentController) UpdateComment(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	commentId, err := ulid.Parse(commentIdStr)
+	commentId, err := pkg.ParseULID(commentIdStr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

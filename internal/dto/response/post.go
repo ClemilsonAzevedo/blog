@@ -3,12 +3,12 @@ package response
 import (
 	"time"
 
-	"go.bryk.io/pkg/ulid"
+	"github.com/clemilsonazevedo/blog/pkg"
 )
 
 type PostResponse struct {
-	ID        ulid.ULID `json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
-	AuthorId  ulid.ULID `json:"author_id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	ID        pkg.ULID  `json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	AuthorId  pkg.ULID  `json:"author_id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 	Title     string    `json:"title"`
 	Content   string    `json:"content"`
 	Slug      string    `json:"slug"`

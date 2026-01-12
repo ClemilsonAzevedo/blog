@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/repository"
-	"go.bryk.io/pkg/ulid"
+	"github.com/clemilsonazevedo/blog/pkg"
 )
 
 type UserService struct {
@@ -24,11 +24,11 @@ func (s *UserService) UpdateUser(user *entities.User) error {
 	return s.userRepository.UpdateUser(user)
 }
 
-func (s *UserService) DeleteUser(id ulid.ULID) error {
+func (s *UserService) DeleteUser(id pkg.ULID) error {
 	return s.userRepository.DeleteUser(id)
 }
 
-func (s *UserService) GetUserByID(id ulid.ULID) (*entities.User, error) {
+func (s *UserService) GetUserByID(id pkg.ULID) (*entities.User, error) {
 	return s.userRepository.GetUserByID(id)
 }
 

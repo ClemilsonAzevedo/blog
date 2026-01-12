@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
-	"go.bryk.io/pkg/ulid"
+	"github.com/clemilsonazevedo/blog/pkg"
 	"gorm.io/gorm"
 )
 
@@ -22,11 +22,11 @@ func (ur *UserRepository) UpdateUser(user *entities.User) error {
 	return ur.DB.Save(user).Error
 }
 
-func (ur *UserRepository) DeleteUser(id ulid.ULID) error {
+func (ur *UserRepository) DeleteUser(id pkg.ULID) error {
 	return ur.DB.Delete(&entities.User{}, id).Error
 }
 
-func (ur *UserRepository) GetUserByID(id ulid.ULID) (*entities.User, error) {
+func (ur *UserRepository) GetUserByID(id pkg.ULID) (*entities.User, error) {
 	var user entities.User
 	err := ur.DB.First(&user, id).Error
 	if err != nil {

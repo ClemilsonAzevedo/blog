@@ -4,14 +4,14 @@ import (
 	"time"
 
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
-	"go.bryk.io/pkg/ulid"
+	"github.com/clemilsonazevedo/blog/pkg"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Role = enums.Role
 
 type User struct {
-	ID        ulid.ULID `gorm:"column:id;primaryKey;type:VARCHAR(26);not null" json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	ID        pkg.ULID  `gorm:"column:id;primaryKey;type:varchar(26);not null" json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 	UserName  string    `gorm:"column:username;unique;not null;" json:"username"`
 	Email     string    `gorm:"column:email;unique;not null;" json:"email"`
 	Password  string    `gorm:"column:password;not null" json:"password"`
