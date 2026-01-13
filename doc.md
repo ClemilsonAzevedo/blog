@@ -26,6 +26,7 @@
 - [x] Fazer verificação de campos vazios nas rotas/controllers
 - [x] Criar collection de todas as rotas no Postman
 - [ ] Corrigir Rotas
+- [ ] Error Handling
 - [ ] Verificar se o Post existe ao buscar post por id
 - [ ] Verificar se o Post existe ao buscar commentario por id do post
 - [ ] Testar e corrigir todas as rotas apos a troca do UUID por ULID

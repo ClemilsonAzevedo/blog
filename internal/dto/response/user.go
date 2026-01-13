@@ -1,6 +1,10 @@
 package response
 
 import (
+	"encoding/json"
+	"net/http"
+	"time"
+
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
 	"github.com/clemilsonazevedo/blog/pkg"
 )
@@ -8,6 +12,17 @@ import (
 type UserLogin struct {
 	Token   string `json:"token"`
 	Expires int64  `json:"exp"`
+}
+
+type UserResponse struct {
+	Message   string    `json:"message"`
+	UserID    string    `json:"user_id,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
+type SuccessResponse[T any] struct {
+	Message string `json:"message"`
+	Data    T      `json:"data,omitempty"`
 }
 
 type UserByID struct {
@@ -19,4 +34,25 @@ type UserByID struct {
 
 type UserLogout struct {
 	Message string `json:"message"`
+}
+
+func WriteJSON(w http.ResponseWriter, status int, payload any) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func CreatedUser(w http.ResponseWriter, userID string) {
+	WriteJSON(w, http.StatusCreated, UserResponse{
+		Message:   "user created successfully",
+		UserID:    userID,
+		Timestamp: time.Now().UTC(),
+	})
+}
+
+func OK[T any](w http.ResponseWriter, message string, data T) {
+	WriteJSON(w, http.StatusOK, SuccessResponse[T]{
+		Message: message,
+		Data:    data,
+	})
 }

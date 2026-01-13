@@ -2,18 +2,22 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"net/mail"
 	"time"
 
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/internal/domain/enums"
+	"github.com/clemilsonazevedo/blog/internal/domain/exceptions"
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/clemilsonazevedo/blog/pkg"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type User = entities.User
@@ -45,42 +49,50 @@ func NewUserController(service *service.UserService) *UserController {
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var data request.UserRegister
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-		fmt.Fprintf(w, "%v", err)
-
-		http.Error(w, "Cannot decode body", http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot decode body", reqId)
 		return
 	}
 
 	if data.Email == "" || data.UserName == "" || data.Password == "" {
-		http.Error(w, "You need provide all credentials", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Failed"), "You need provide all credentials", "")
+		return
+	}
+
+	email, err := mail.ParseAddress(data.Email)
+	if err != nil {
+		exceptions.BadRequest(w, err, "You need Provide a valid email", email.Address)
 		return
 	}
 
 	if len(data.Password) < 8 {
-		http.Error(w, "Password need 8 or more characters", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Failed"), "Password need 8 or more characters", data.Password)
 		return
 	}
 
-	existingUser, err := uc.service.GetUserByEmail(data.Email)
+	existingUser, err := uc.service.GetUserByEmail(email.Address)
 	if err != nil {
-		http.Error(w, "Cannot search per user", http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot search per user", reqId)
 		return
 	}
 
 	if existingUser.Email == data.Email {
-		http.Error(w, "User Already Exists", http.StatusConflict)
+		exceptions.Conflict(w, errors.New("Conflict"), "User Already Exists")
 		return
 	}
 
 	hashedPassword, err := auth.HashPassword(data.Password)
 	if err != nil {
-		http.Error(w, "Cannot hash password", http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot hash password", reqId)
 		return
 	}
 
 	userId, err := pkg.NewULID()
 	if err != nil {
-		http.Error(w, "Cannot Generate ULID to this User", http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot Generate ULID to this User", reqId)
 		return
 	}
 
@@ -91,13 +103,14 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		Password: hashedPassword,
 		Role:     enums.Reader,
 	}
+
 	if err := uc.service.CreateUser(&user); err != nil {
-		http.Error(w, "Cannot create user", http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot Create this user", reqId)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("User Created has successfully"))
+	response.CreatedUser(w, userId.String())
 }
 
 // LoginUser godoc

@@ -195,7 +195,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"username\" : \"clemaaz\",\n    \"email\": \"clema@email.com\",\n    \"password\": \"clema123\"\n}",
+                  "raw": "{\n    \"username\" : \"\",\n    \"email\": \"\",\n    \"password\": \"\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
