@@ -32,3 +32,4 @@
 - [ ] Fazer feature de criar um post com apenas um link
   - [ ] Gerar resumo, titulo e hashtags e postar colocando o link no fim
 - [ ] Mandar email de confirmacao do usuario
+- [ ] Verificar cookie do Author com permissoes

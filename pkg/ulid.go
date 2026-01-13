@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 
 	"go.bryk.io/pkg/ulid"
@@ -39,6 +40,14 @@ func (u ULID) String() string {
 	return u.internal.String()
 }
 
+func (u ULID) ToLib() ulid.ULID {
+	return u.internal
+}
+
+func FromLib(id ulid.ULID) ULID {
+	return ULID{internal: id}
+}
+
 func (u ULID) Value() (driver.Value, error) {
 	return u.internal.String(), nil
 }
@@ -62,4 +71,21 @@ func (u *ULID) Scan(src any) error {
 	default:
 		return errors.New("unsupported type for ULID Scan")
 	}
+}
+
+func (u ULID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(u.internal.String())
+}
+
+func (u *ULID) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	id, err := ulid.Parse(s)
+	if err != nil {
+		return err
+	}
+	u.internal = id
+	return nil
 }

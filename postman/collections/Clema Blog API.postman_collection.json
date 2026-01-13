@@ -500,12 +500,13 @@
               {
                 "key": "Cookie",
                 "value": "token",
-                "type": "text"
+                "type": "text",
+                "disabled": true
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"title\": \"Conteudo do post para gerar o titulo\",\n    \"content\": \"Conteudo do post para gerar o titulo\",\n    \"userId\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}",
+              "raw": "{\n    \"title\": \"How Use Rate Limit on go?\",\n    \"content\": \"Imagine you’re running an API service that suddenly gets a huge spike in traffic — maybe from a real user, maybe from a bot, or worse, a DDoS attack. Without rate limiting, your system could slow down or even crash. \\n Rate limiters are like traffic controllers; they decide how many requests can pass through in a given amount of time, ensuring stability, fairness, and protection of resources.\\n \",\n    \"author_id\": \"01KEWF42M44MTF0Q7HBGSPEEHM\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -542,7 +543,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"content\": \"Imagine you’re running an API service that suddenly gets a huge spike in traffic — maybe from a real user, maybe from a bot, or worse, a DDoS attack. Without rate limiting, your system could slow down or even crash. \\n Rate limiters are like traffic controllers; they decide how many requests can pass through in a given amount of time, ensuring stability, fairness, and protection of resources.\\n \",\n    \"userId\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}",
+              "raw": "{\n    \"content\": \"Imagine you’re running an API service that suddenly gets a huge spike in traffic — maybe from a real user, maybe from a bot, or worse, a DDoS attack. Without rate limiting, your system could slow down or even crash. \\n Rate limiters are like traffic controllers; they decide how many requests can pass through in a given amount of time, ensuring stability, fairness, and protection of resources.\\n \",\n    \"userId\": \"01KEWF42M44MTF0Q7HBGSPEEHM\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -638,12 +639,18 @@
               {
                 "key": "Cookie",
                 "value": "token",
-                "type": "text"
+                "type": "text",
+                "disabled": true
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"content\": \"Conteudo do post para gerar o titulo\",\n    \"user_id\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}"
+              "raw": "{\n    \"content\": \"Conteudo do post para gerar o titulo\",\n    \"user_id\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{BASE_URL_V1}}/users",

@@ -7,12 +7,12 @@ type PostCreate struct {
 	Content  string   `json:"content" binding:"required,min=2,max=1000"`
 	Likes    int      `json:"likes" binding:"required,min=0"`
 	Dislikes int      `json:"dislikes" binding:"required,min=0"`
-	UserID   pkg.ULID `json:"userId" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	AuthorId pkg.ULID `json:"author_id" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 }
 
 type AiPostCreate struct {
-	Content string   `json:"content" binding:"required,min=2,max=1000"`
-	UserID  pkg.ULID `json:"userId" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+	Content  string   `json:"content" binding:"required,min=2,max=1000"`
+	AuthorId pkg.ULID `json:"author_id" binding:"required,min=1" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 }
 
 type PostUpdate struct {

@@ -61,7 +61,7 @@ func (pc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 		Content:  dto.Content,
 		Likes:    dto.Likes,
 		Dislikes: dto.Dislikes,
-		UserID:   dto.UserID,
+		AuthorId: dto.AuthorId,
 	}
 	if err := pc.service.CreatePost(&Post); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -104,10 +104,10 @@ func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Reques
 	}
 
 	Post := entities.Post{
-		ID:      aiPostId,
-		Title:   aiRes.Title,
-		Content: pkg.GeneratePostContent(dto.Content, aiRes.Hashtags),
-		UserID:  dto.UserID,
+		ID:       aiPostId,
+		Title:    aiRes.Title,
+		Content:  pkg.GeneratePostContent(dto.Content, aiRes.Hashtags),
+		AuthorId: dto.AuthorId,
 	}
 
 	if err := pc.service.CreatePost(&Post); err != nil {
@@ -149,7 +149,7 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := response.PostResponse{
-		AuthorId:  post.UserID,
+		AuthorId:  post.AuthorId,
 		ID:        post.ID,
 		Title:     post.Title,
 		Content:   post.Content,
@@ -190,7 +190,7 @@ func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) 
 
 	response := response.PostResponse{
 		ID:        post.ID,
-		AuthorId:  post.UserID,
+		AuthorId:  post.AuthorId,
 		Title:     post.Title,
 		Content:   post.Content,
 		Slug:      post.Slug,
@@ -270,7 +270,7 @@ func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Reques
 			Title:     post.Title,
 			Slug:      post.Slug,
 			Views:     post.Views,
-			AuthorId:  post.UserID,
+			AuthorId:  post.AuthorId,
 			CreatedAt: post.CreatedAt,
 		}
 	}
@@ -338,7 +338,7 @@ func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 
 	response := response.PostResponse{
 		ID:       post.ID,
-		AuthorId: post.UserID,
+		AuthorId: post.AuthorId,
 		Title:    post.Title,
 		Content:  post.Content,
 		Likes:    post.Likes,
