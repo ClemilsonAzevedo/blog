@@ -71,49 +71,6 @@ func (cc *CommentController) CreateComment(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusCreated)
 }
 
-// GetCommentById godoc
-// @Summary Get comment by ID
-// @Description Retrieves a single comment by its ULID (authentication required)
-// @Tags Comments
-// @Produce json
-// @Param id path string true "Comment ULID"
-// @Success 200 {object} response.CommentResponse
-// @Failure 400 {string} string "ID is required"
-// @Failure 500 {string} string "Error retrieving comment"
-// @Security CookieAuth
-// @Router /comments [get]
-func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	if idStr == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
-		return
-	}
-
-	id, err := pkg.ParseULID(idStr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	Comment, err := cc.service.GetCommentByID(id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	response := response.CommentResponse{
-		ID:        Comment.ID,
-		Content:   Comment.Content,
-		UserID:    Comment.UserID,
-		PostID:    Comment.PostID,
-		CreatedAt: Comment.CreatedAt,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
-}
-
 // GetCommentByPostID godoc
 // @Summary Get comments by post ID
 // @Description Retrieves all comments for a specific post
@@ -192,60 +149,4 @@ func (cc *CommentController) DeleteComment(w http.ResponseWriter, r *http.Reques
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-}
-
-// UpdateComment godoc
-// @Summary Update a comment
-// @Description Updates an existing comment
-// @Tags Comments
-// @Accept json
-// @Produce json
-// @Param id path string true "Comment ULID"
-// @Param request body request.CommentUpdate true "Comment update data"
-// @Success 200 {object} response.CommentResponse
-// @Failure 400 {string} string "ID is required"
-// @Failure 500 {string} string "Error updating comment"
-// @Security CookieAuth
-// @Router /comment/{id} [put]
-func (cc *CommentController) UpdateComment(w http.ResponseWriter, r *http.Request) {
-	commentIdStr := chi.URLParam(r, "id")
-	if commentIdStr == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
-		return
-	}
-
-	var dto request.CommentUpdate
-	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	commentId, err := pkg.ParseULID(commentIdStr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	comment := entities.Comment{
-		ID:      commentId,
-		UserID:  dto.UserID,
-		PostID:  dto.PostID,
-		Content: dto.Content,
-	}
-
-	if err := cc.service.UpdateComment(&comment); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	response := response.CommentResponse{
-		ID:      comment.ID,
-		UserID:  comment.UserID,
-		PostID:  comment.PostID,
-		Content: comment.Content,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
 }

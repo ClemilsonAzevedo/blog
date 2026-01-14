@@ -204,48 +204,6 @@ func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetUserById godoc
-// @Summary Get user by ID
-// @Description Retrieves a user by their ULID
-// @Tags Users
-// @Produce json
-// @Param id path string true "User ULID"
-// @Success 200 {object} response.UserByID
-// @Failure 400 {string} string "ID is required"
-// @Failure 500 {string} string "Error retrieving user"
-// @Security CookieAuth
-// @Router /user/{id} [get]
-func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
-	userIdStr := chi.URLParam(r, "id")
-	if userIdStr == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
-		return
-	}
-
-	userId, err := pkg.ParseULID(userIdStr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	user, err := uc.service.GetUserByID(userId)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	response := response.UserByID{
-		ID:       user.ID,
-		UserName: user.UserName,
-		Email:    user.Email,
-		Role:     user.Role,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
-}
-
 // Profile godoc
 // @Summary Get current user profile
 // @Description Retrieves the profile of the currently authenticated user
@@ -307,27 +265,6 @@ func (uc *UserController) GetUserByEmail(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
-}
-
-// GetAllUsers godoc
-// @Summary Get all users
-// @Description Retrieves a list of all users (Author role required)
-// @Tags Users
-// @Produce json
-// @Success 200 {array} entities.User
-// @Failure 500 {string} string "Error retrieving users"
-// @Security CookieAuth
-// @Router /users [get]
-func (uc *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := uc.service.GetAllUsers()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(users)
 }
 
 // UpdateUser godoc
