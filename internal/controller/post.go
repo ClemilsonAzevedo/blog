@@ -2,17 +2,21 @@ package controller
 
 import (
 	"encoding/json"
-	"math"
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
+	"github.com/clemilsonazevedo/blog/internal/domain/exceptions"
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/clemilsonazevedo/blog/pkg"
 	"github.com/clemilsonazevedo/blog/tools"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"gorm.io/gorm"
 )
 
 type PostController struct {
@@ -130,39 +134,43 @@ func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Reques
 // @Failure 500 {string} string "Error retrieving post"
 // @Router /post/{id} [get]
 func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
-	postIdStr := chi.URLParam(r, "id")
+	postIdStr := r.URL.Query().Get("postId")
 	if postIdStr == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need to provide Post Id", postIdStr)
 		return
 	}
 
 	postId, err := pkg.ParseULID(postIdStr)
 	if err != nil {
-		http.Error(w, "Cannot parse Id of Post", http.StatusBadRequest)
+		exceptions.BadRequest(w, err, "Cannot parse Id of Post", postId)
 		return
 	}
 
 	post, err := uc.service.GetPostByID(postId)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err == gorm.ErrRecordNotFound {
+		exceptions.NotFound(w, err, fmt.Sprintf("Post with id %v not found", postId))
 		return
 	}
 
-	response := response.PostResponse{
-		AuthorId:  post.AuthorId,
+	if err != nil {
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot get this post", reqId)
+		return
+	}
+
+	postObj := response.PostResponse{
 		ID:        post.ID,
 		Title:     post.Title,
-		Content:   post.Content,
 		Slug:      post.Slug,
+		Content:   post.Content,
+		AuthorId:  post.AuthorId,
 		Likes:     post.Likes,
 		Dislikes:  post.Dislikes,
 		Views:     post.Views,
 		CreatedAt: post.CreatedAt,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	response.ShowPost(w, postObj)
 }
 
 // GetPostBySlug godoc
@@ -207,22 +215,6 @@ func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) 
 // GetAllPosts godoc
 // @Summary Get all posts
 // @Description Retrieves all blog posts
-// @Tags Posts
-// @Produce json
-// @Success 200 {array} entities.Post
-// @Failure 500 {string} string "Error retrieving posts"
-// @Router /posts/all [get]
-func (uc *PostController) GetAllPosts(w http.ResponseWriter, r *http.Request) {
-	posts, err := uc.service.GetAllPosts()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(posts)
-}
 
 // GetPaginatedPosts godoc
 // @Summary Get paginated posts
@@ -237,55 +229,57 @@ func (uc *PostController) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {string} string "Error retrieving posts"
 // @Router /posts [get]
 func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Request) {
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+
+	if pageStr == "" || limitStr == "" {
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need provide values to page and limit", map[string]string{
+			"page":  pageStr,
+			"limit": limitStr,
+		})
+	}
+
+	page, err := strconv.Atoi(pageStr)
 	if err != nil {
-		http.Error(w, "Page is required", http.StatusBadRequest)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot convert page into int number", reqId)
 		return
 	}
 
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	limit, err := strconv.Atoi(limitStr)
 	if err != nil {
-		http.Error(w, "Limit is required", http.StatusBadRequest)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot convert limit into int number", reqId)
 		return
 	}
 
-	if page <= 0 {
+	if page <= 0 || limit <= 0 || limit > 25 {
 		page = 1
-	}
-	if limit <= 0 || limit > 100 {
 		limit = 10
 	}
 
 	posts, total, err := c.service.GetPaginatedPosts(page, limit)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot get paginated Posts", reqId)
 		return
 	}
 
-	postsDto := make([]response.PostResponse, len(posts))
-	for i, post := range posts {
-		postsDto[i] = response.PostResponse{
-			ID:        post.ID,
-			Content:   post.Content,
-			Title:     post.Title,
-			Slug:      post.Slug,
-			Views:     post.Views,
-			AuthorId:  post.AuthorId,
-			CreatedAt: post.CreatedAt,
+	postsObj := make([]response.PostResponse, len(posts))
+	for i := range len(posts) {
+		p := posts[i]
+		postsObj[i] = response.PostResponse{
+			ID:        p.ID,
+			Title:     p.Title,
+			Slug:      p.Slug,
+			Content:   p.Content,
+			Views:     p.Views,
+			AuthorId:  p.AuthorId,
+			CreatedAt: p.CreatedAt,
 		}
 	}
 
-	response := map[string]any{
-		"data": postsDto,
-		"meta": map[string]any{
-			"page":       page,
-			"limit":      limit,
-			"total":      total,
-			"totalPages": int(math.Ceil(float64(total) / float64(limit))),
-		},
-	}
-
-	json.NewEncoder(w).Encode(response)
+	response.ListPosts(w, postsObj, page, limit, int(total))
 }
 
 // UpdatePost godoc

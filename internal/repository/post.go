@@ -29,9 +29,13 @@ func (pr *PostRepository) DeletePost(id pkg.ULID) error {
 
 func (pr *PostRepository) GetPostByID(postId pkg.ULID) (*entities.Post, error) {
 	var Post entities.Post
-	err := pr.DB.Model(&entities.Post{}).Where("id = ?", postId).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&Post).Error
-	if err != nil {
-		return nil, err
+	tx := pr.DB.Model(&entities.Post{}).Where("id = ?", postId).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&Post)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return nil, gorm.ErrRecordNotFound
 	}
 
 	return &Post, nil

@@ -309,41 +309,6 @@ func (uc *UserController) GetUserByEmail(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(response)
 }
 
-// GetUserByName godoc
-// @Summary Get user by name
-// @Description Retrieves a user by their username
-// @Tags Users
-// @Produce json
-// @Param name query string true "Username"
-// @Success 200 {object} response.UserByID
-// @Failure 400 {string} string "Name is required"
-// @Failure 500 {string} string "Error retrieving user"
-// @Security CookieAuth
-// @Router /user/name [get]
-func (uc *UserController) GetUserByName(w http.ResponseWriter, r *http.Request) {
-	name := r.URL.Query().Get("name")
-	if name == "" {
-		http.Error(w, "Name is required", http.StatusBadRequest)
-		return
-	}
-
-	user, err := uc.service.GetUserByName(name)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	response := response.UserByID{
-		ID:       user.ID,
-		UserName: user.UserName,
-		Email:    user.Email,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
-}
-
 // GetAllUsers godoc
 // @Summary Get all users
 // @Description Retrieves a list of all users (Author role required)

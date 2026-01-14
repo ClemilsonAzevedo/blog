@@ -25,12 +25,14 @@
 - [x] Mover o prompt da pasta ai
 - [x] Fazer verificação de campos vazios nas rotas/controllers
 - [x] Criar collection de todas as rotas no Postman
+- [x] Error Handling
 - [ ] Corrigir Rotas
-- [ ] Error Handling
 - [ ] Verificar se o Post existe ao buscar post por id
 - [ ] Verificar se o Post existe ao buscar commentario por id do post
 - [ ] Testar e corrigir todas as rotas apos a troca do UUID por ULID
 - [ ] Fazer feature de criar um post com apenas um link
   - [ ] Gerar resumo, titulo e hashtags e postar colocando o link no fim
+- [ ] Fazer rota de GetUsers não retornar password
 - [ ] Mandar email de confirmacao do usuario
 - [ ] Verificar cookie do Author com permissoes
+- [ ] Separar AcessToken de Refresh Token
