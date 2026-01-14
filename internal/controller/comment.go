@@ -2,14 +2,19 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
+	"github.com/clemilsonazevedo/blog/internal/domain/exceptions"
 	"github.com/clemilsonazevedo/blog/internal/dto/request"
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/clemilsonazevedo/blog/pkg"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"gorm.io/gorm"
 )
 
 type CommentController struct {
@@ -120,27 +125,42 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 // @Failure 500 {string} string "Error retrieving comments"
 // @Router /comments/{postID} [get]
 func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.Request) {
-	postIdStr := chi.URLParam(r, "postID")
+	postIdStr := r.URL.Query().Get("postId")
 	if postIdStr == "" {
-		http.Error(w, "Post ID is required", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need Provide Post Id on route", postIdStr)
 		return
 	}
 
 	postId, err := pkg.ParseULID(postIdStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		exceptions.BadRequest(w, err, "Cannot Parse Post Id", postId)
 		return
 	}
 
 	comments, err := cc.service.GetCommentsByPostID(postId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			exceptions.NotFound(w, err, fmt.Sprintf("Post with id %v not found", postId))
+			return
+		}
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot get comments of this post", reqId)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(comments)
+	commentsObj := make([]response.CommentResponse, len(comments))
+	for i := range len(comments) {
+		p := comments[i]
+		commentsObj[i] = response.CommentResponse{
+			ID:        p.ID,
+			PostID:    p.PostID,
+			UserID:    p.UserID,
+			Content:   p.Content,
+			CreatedAt: p.CreatedAt,
+		}
+	}
+
+	response.ShowComments(w, commentsObj)
 }
 
 // GetCommentByUserID godoc

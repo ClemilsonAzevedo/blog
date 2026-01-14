@@ -41,15 +41,6 @@ func (pr *PostRepository) GetPostByID(postId pkg.ULID) (*entities.Post, error) {
 	return &Post, nil
 }
 
-func (pr *PostRepository) GetPostBySlug(slug string) (*entities.Post, error) {
-	var post entities.Post
-	err := pr.DB.Model(&entities.Post{}).Where("slug = ?", slug).Clauses(clause.Returning{}).UpdateColumn("views", gorm.Expr("views + ?", 1)).Scan(&post).Error
-	if err != nil {
-		return nil, err
-	}
-	return &post, nil
-}
-
 func (pr *PostRepository) GetAllPosts() ([]*entities.Post, error) {
 	var Posts []*entities.Post
 	err := pr.DB.Find(&Posts).Error

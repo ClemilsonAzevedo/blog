@@ -133,7 +133,7 @@ func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Reques
 // @Failure 400 {string} string "Cannot parse Id of Post"
 // @Failure 500 {string} string "Error retrieving post"
 // @Router /post/{id} [get]
-func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
+func (pc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	postIdStr := r.URL.Query().Get("postId")
 	if postIdStr == "" {
 		exceptions.BadRequest(w, errors.New("Request Error"), "You need to provide Post Id", postIdStr)
@@ -146,7 +146,7 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err := uc.service.GetPostByID(postId)
+	post, err := pc.service.GetPostByID(postId)
 	if err == gorm.ErrRecordNotFound {
 		exceptions.NotFound(w, err, fmt.Sprintf("Post with id %v not found", postId))
 		return
@@ -171,45 +171,6 @@ func (uc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.ShowPost(w, postObj)
-}
-
-// GetPostBySlug godoc
-// @Summary Get post by slug
-// @Description Retrieves a single post by its URL slug
-// @Tags Posts
-// @Produce json
-// @Param slug path string true "Post slug"
-// @Success 200 {object} response.PostResponse
-// @Failure 400 {string} string "Slug is required"
-// @Failure 500 {string} string "Error retrieving post"
-// @Router /post/slug/{slug} [get]
-func (uc *PostController) GetPostBySlug(w http.ResponseWriter, r *http.Request) {
-	slug := chi.URLParam(r, "slug")
-	if slug == "" {
-		http.Error(w, "Slug is required", http.StatusBadRequest)
-		return
-	}
-
-	post, err := uc.service.GetPostBySlug(slug)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	response := response.PostResponse{
-		ID:        post.ID,
-		AuthorId:  post.AuthorId,
-		Title:     post.Title,
-		Content:   post.Content,
-		Slug:      post.Slug,
-		Likes:     post.Likes,
-		Dislikes:  post.Dislikes,
-		CreatedAt: post.CreatedAt,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
 }
 
 // GetAllPosts godoc

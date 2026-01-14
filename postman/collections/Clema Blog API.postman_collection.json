@@ -48,12 +48,12 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{BASE_URL_V1}}/posts?postId=01KEXFFECJZ1BCYYT7HM7TN2QC",
+                  "raw": "{{BASE_URL_V1}}/post?postId=01KEXFFECJZ1BCYYT7HM7TN2QC",
                   "host": [
                     "{{BASE_URL_V1}}"
                   ],
                   "path": [
-                    "posts"
+                    "post"
                   ],
                   "query": [
                     {
@@ -247,13 +247,19 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{BASE_URL_V1}}/comments/01KEJ2SG4DSF2XHFKPV4N5CBS1",
+                  "raw": "{{BASE_URL_V1}}/comments?postId=01KEXFFECJZ1BCYYT7HM7TN2QC",
                   "host": [
                     "{{BASE_URL_V1}}"
                   ],
                   "path": [
-                    "comments",
-                    "01KEJ2SG4DSF2XHFKPV4N5CBS1"
+                    "comments"
+                  ],
+                  "query": [
+                    {
+                      "key": "postId",
+                      "value": "01KEXFFECJZ1BCYYT7HM7TN2QC",
+                      "uuid": "dc11ec15-9144-4ab1-937e-2da58d61fba0"
+                    }
                   ]
                 }
               },

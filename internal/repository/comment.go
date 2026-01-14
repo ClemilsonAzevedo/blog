@@ -1,12 +1,15 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/clemilsonazevedo/blog/internal/domain/entities"
 	"github.com/clemilsonazevedo/blog/pkg"
 	"gorm.io/gorm"
 )
 
 type Comment = entities.Comment
+type Post = entities.Post
 type CommentRepository struct {
 	DB *gorm.DB
 }
@@ -46,12 +49,21 @@ func (cr *CommentRepository) GetAllComments() ([]*Comment, error) {
 }
 
 func (cr *CommentRepository) GetCommentsByPostID(postID pkg.ULID) ([]*Comment, error) {
-	var Comments []*Comment
-	err := cr.DB.Where("post_id = ?", postID).Find(&Comments).Error
+	err := cr.DB.Where("id = ?", postID).First(&Post{}).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+		return nil, err
+	}
+
+	var comments []*Comment
+	err = cr.DB.Where("post_id = ?", postID).Find(&comments).Error
 	if err != nil {
 		return nil, err
 	}
-	return Comments, nil
+
+	return comments, nil
 }
 
 func (cr *CommentRepository) GetCommentsByUserID(userID pkg.ULID) ([]*Comment, error) {

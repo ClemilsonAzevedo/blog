@@ -1,6 +1,7 @@
 package response
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/clemilsonazevedo/blog/pkg"
@@ -12,4 +13,18 @@ type CommentResponse struct {
 	PostID    pkg.ULID  `json:"post_id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type ShowCommentResponse struct {
+	Data      any       `json:"data"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
+func ShowComments(w http.ResponseWriter, commentsObj any) {
+	resp := ShowCommentResponse{
+		Data:      commentsObj,
+		Timestamp: time.Now().UTC(),
+	}
+
+	WriteJSON(w, http.StatusOK, resp)
 }

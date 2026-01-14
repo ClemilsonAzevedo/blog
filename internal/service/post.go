@@ -84,15 +84,6 @@ func (s *PostService) GetPostByID(id pkg.ULID) (*Post, error) {
 	return post, nil
 }
 
-func (s *PostService) GetPostBySlug(slug string) (*Post, error) {
-	post, err := s.PostRepository.GetPostBySlug(slug)
-	if err != nil {
-		return nil, err
-	}
-
-	return post, nil
-}
-
 func (s *PostService) GetAllPosts() ([]*Post, error) {
 	if posts, found := s.cache.GetAll(); found {
 		return posts, nil
