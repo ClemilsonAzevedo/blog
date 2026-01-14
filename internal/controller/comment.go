@@ -124,7 +124,7 @@ func (cc *CommentController) GetCommentById(w http.ResponseWriter, r *http.Reque
 // @Failure 400 {string} string "Post ID is required"
 // @Failure 500 {string} string "Error retrieving comments"
 // @Router /comments/{postID} [get]
-func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.Request) {
+func (cc *CommentController) GetCommentsByPostID(w http.ResponseWriter, r *http.Request) {
 	postIdStr := r.URL.Query().Get("postId")
 	if postIdStr == "" {
 		exceptions.BadRequest(w, errors.New("Request Error"), "You need Provide Post Id on route", postIdStr)
@@ -161,75 +161,6 @@ func (cc *CommentController) GetCommentByPostID(w http.ResponseWriter, r *http.R
 	}
 
 	response.ShowComments(w, commentsObj)
-}
-
-// GetCommentByUserID godoc
-// @Summary Get comments by user ID
-// @Description Retrieves all comments made by a specific user
-// @Tags Comments
-// @Produce json
-// @Param userID path string true "User ULID"
-// @Success 200 {array} response.CommentResponse
-// @Failure 400 {string} string "User ID is required"
-// @Failure 500 {string} string "Error retrieving comments"
-// @Security CookieAuth
-// @Router /comments/user/{userID} [get]
-func (cc *CommentController) GetCommentByUserID(w http.ResponseWriter, r *http.Request) {
-	userIdStr := chi.URLParam(r, "userID")
-	if userIdStr == "" {
-		http.Error(w, "User ID is required", http.StatusBadRequest)
-		return
-	}
-
-	userId, err := pkg.ParseULID(userIdStr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	comments, err := cc.service.GetCommentsByUserID(userId)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(comments)
-}
-
-// GetCommentsByPostID godoc
-// @Summary Get comments by post ID (alternative)
-// @Description Retrieves all comments for a specific post
-// @Tags Comments
-// @Produce json
-// @Param postID path string true "Post ULID"
-// @Success 200 {array} response.CommentResponse
-// @Failure 400 {string} string "Post ID is required"
-// @Failure 500 {string} string "Error retrieving comments"
-// @Router /post/{postID}/comments [get]
-func (cc *CommentController) GetCommentsByPostID(w http.ResponseWriter, r *http.Request) {
-	postIdStr := chi.URLParam(r, "postID")
-	if postIdStr == "" {
-		http.Error(w, "Post ID is required", http.StatusBadRequest)
-		return
-	}
-
-	postId, err := pkg.ParseULID(postIdStr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	comments, err := cc.service.GetCommentsByPostID(postId)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(comments)
 }
 
 // DeleteComment godoc

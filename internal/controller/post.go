@@ -147,12 +147,12 @@ func (pc *PostController) GetPostById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post, err := pc.service.GetPostByID(postId)
-	if err == gorm.ErrRecordNotFound {
-		exceptions.NotFound(w, err, fmt.Sprintf("Post with id %v not found", postId))
-		return
-	}
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			exceptions.NotFound(w, err, fmt.Sprintf("Post with id %v not found", postId))
+			return
+		}
 		reqId := middleware.GetReqID(r.Context())
 		exceptions.InternalError(w, err, "Cannot get this post", reqId)
 		return
