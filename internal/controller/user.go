@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/mail"
 	"time"
@@ -127,37 +126,44 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Router /login [post]
 func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	var data request.UserLogin
-	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&data); err != nil {
+		exceptions.BadRequest(w, err, "Cannot Decode Body", nil)
+		return
+	}
+
+	if dec.More() {
+		exceptions.BadRequest(w, errors.New("Multiple JSON values not allowed"), "multiple JSON values not allowed", nil)
 		return
 	}
 
 	if data.Email == "" || data.Password == "" {
-		http.Error(w, "Email and Password are Required", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request error | Invalid JSON"), "Email and Password are Required", data)
 		return
 	}
 
 	authUser, err := uc.service.GetUserByEmail(data.Email)
 	if err != nil {
-		fmt.Fprintf(w, "%v", err)
-		http.Error(w, "Email or Password is incorrectu", http.StatusBadRequest)
+		exceptions.BadRequest(w, err, "User does not exists", data)
 		return
 	}
 
 	isPasswordEquals := auth.CheckPassword(authUser.Password, data.Password)
 	if !isPasswordEquals {
-		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Error"), "Email or password incorrect", data)
 		return
 	}
 
 	token, exp, err := auth.GenerateJWT(*authUser, 24*7*time.Hour)
 	if err != nil {
-		http.Error(w, "Email or Password is incorrect", http.StatusBadRequest)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot generate JWT to this Session", reqId)
 		return
 	}
 
-	age := int(exp - time.Now().Unix())
-	age = max(age, 0)
+	expires := time.Unix(exp, 0)
+	maxAge := max(int(exp-time.Now().Unix()), 0)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
 		Value:    token,
@@ -165,11 +171,14 @@ func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
-		Expires:  time.Unix(exp, 0),
-		MaxAge:   age,
+		Expires:  expires,
+		MaxAge:   maxAge,
 	})
 
-	w.WriteHeader(http.StatusOK)
+	response.OK(w, "User has logged successfully", response.UserLogin{
+		Token:   token,
+		Expires: expires,
+	})
 }
 
 // Logout godoc
@@ -190,8 +199,9 @@ func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
 		MaxAge:   -1,
 	})
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message":"logout successful"}`))
+	response.OK(w, "Logged Out", response.UserLogout{
+		Message: "user has logged out with success",
+	})
 }
 
 // GetUserById godoc

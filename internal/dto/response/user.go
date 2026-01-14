@@ -10,8 +10,8 @@ import (
 )
 
 type UserLogin struct {
-	Token   string `json:"token"`
-	Expires int64  `json:"exp"`
+	Token   string    `json:"token"`
+	Expires time.Time `json:"exp"`
 }
 
 type UserResponse struct {

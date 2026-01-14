@@ -130,62 +130,7 @@
                   ]
                 }
               },
-              "response": [
-                {
-                  "id": "b38092e1-0942-455f-9205-9acfc813b1ab",
-                  "name": "user login",
-                  "originalRequest": {
-                    "method": "POST",
-                    "header": [],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n    \"email\": \"clema@email.com\",\n    \"password\": \"clema123\"\n}",
-                      "options": {
-                        "raw": {
-                          "language": "json"
-                        }
-                      }
-                    },
-                    "url": {
-                      "raw": "{{BASE_URL_V1}}/login",
-                      "host": [
-                        "{{BASE_URL_V1}}"
-                      ],
-                      "path": [
-                        "login"
-                      ]
-                    }
-                  },
-                  "status": "OK",
-                  "code": 200,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Api-Version",
-                      "value": "v1.0"
-                    },
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    },
-                    {
-                      "key": "Set-Cookie",
-                      "value": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDcmVhdGVkQXQiOiIyMDI2LTAxLTEyVDIwOjM5OjQyLjk5NDA0NyswMTowMCIsIkVtYWlsIjoiY2xlbWFAZW1haWwuY29tIiwiUm9sZSI6InJlYWRlciIsIlVzZXJOYW1lIjoiY2xlbWFheiIsImV4cCI6MTc2ODg1MTU4OSwiaWF0IjoxNzY4MjQ2Nzg5LCJpZCI6IjAxS0VTVkhCMEdXUkFZNzNGTkZDMTcxMzhIIn0.UU6BM6SEOan701fZ16g1Bdq-MOyTjHiFFnf_Cio6Kb4; Path=/; Expires=Mon, 19 Jan 2026 19:39:49 GMT; Max-Age=604800; HttpOnly; SameSite=Lax"
-                    },
-                    {
-                      "key": "Date",
-                      "value": "Mon, 12 Jan 2026 19:39:49 GMT"
-                    },
-                    {
-                      "key": "Content-Length",
-                      "value": "0"
-                    }
-                  ],
-                  "cookie": [],
-                  "responseTime": "2026-01-12T19:41:16.624Z",
-                  "body": null
-                }
-              ]
+              "response": []
             },
             {
               "name": "member register",
@@ -195,7 +140,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"username\" : \"\",\n    \"email\": \"\",\n    \"password\": \"\"\n}",
+                  "raw": "{\n    \"username\" : \"clema\",\n    \"email\": \"clema@email.com\",\n    \"password\": \"clema123\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
