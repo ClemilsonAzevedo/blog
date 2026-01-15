@@ -8,6 +8,7 @@
 - [X] Criar rota de profile
 - [X] Criar rota de logout
 - [X] Criar sistema de cache dos posts
+- [x] Criar documentacao da API com Swagger
 
 
 ## Clema
@@ -36,3 +37,4 @@
 - [ ] Mandar email de confirmacao do usuario
 - [ ] Verificar cookie do Author com permissoes
 - [ ] Separar AcessToken de Refresh Token
+- [ ] Adicionar campo link no na entidade post
