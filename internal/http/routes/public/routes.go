@@ -12,12 +12,15 @@ type CommentController = controller.CommentController
 func BindPublicRoutes(uc *UserController, pc *PostController, cc *CommentController,
 	c chi.Router) {
 	c.Group(func(r chi.Router) {
+		// Auth
 		r.Post("/register", uc.CreateUser)
 		r.Post("/login", uc.LoginUser)
 
+		// Posts
 		r.Get("/posts", pc.GetPaginatedPosts)
 		r.Get("/post", pc.GetPostById)
 
+		// Comments
 		r.Get("/comments", cc.GetCommentsByPostID)
 	})
 }

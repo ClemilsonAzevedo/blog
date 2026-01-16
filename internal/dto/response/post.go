@@ -61,7 +61,7 @@ func ListPosts(w http.ResponseWriter, postsObj any, page, limit, total int) {
 		Timestamp: time.Now().UTC(),
 	}
 
-	WriteJSON(w, http.StatusOK, resp)
+	OK(w, "success", resp)
 }
 
 func ShowPost(w http.ResponseWriter, postsObj any) {
@@ -70,5 +70,5 @@ func ShowPost(w http.ResponseWriter, postsObj any) {
 		Timestamp: time.Now().UTC(),
 	}
 
-	WriteJSON(w, http.StatusOK, resp)
+	OK(w, "success", resp)
 }

@@ -19,7 +19,15 @@ func (ur *UserRepository) CreateUser(user *entities.User) error {
 }
 
 func (ur *UserRepository) UpdateUser(user *entities.User) error {
-	return ur.DB.Save(user).Error
+	err := ur.DB.
+		Model(&user).
+		Select("UserName", "Email").
+		Updates(entities.User{UserName: user.UserName, Email: user.Email}).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (ur *UserRepository) DeleteUser(id pkg.ULID) error {

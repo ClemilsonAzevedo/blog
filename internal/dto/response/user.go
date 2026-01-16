@@ -23,7 +23,7 @@ type UserResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-type UserByID struct {
+type UserProfile struct {
 	ID       pkg.ULID   `json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 	UserName string     `json:"username"`
 	Email    string     `json:"email"`

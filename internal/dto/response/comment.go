@@ -26,5 +26,5 @@ func ShowComments(w http.ResponseWriter, commentsObj any) {
 		Timestamp: time.Now().UTC(),
 	}
 
-	WriteJSON(w, http.StatusOK, resp)
+	OK(w, "success", resp)
 }

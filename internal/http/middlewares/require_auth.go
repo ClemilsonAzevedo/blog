@@ -11,6 +11,8 @@ import (
 func RequireAuth(us *service.UserService) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+
 			tokenStr := ""
 			cookie, err := r.Cookie("token")
 			if err != nil {
@@ -41,8 +43,8 @@ func RequireAuth(us *service.UserService) func(http.Handler) http.Handler {
 				return
 			}
 
-			ctx := r.Context()
 			ctx = context.WithValue(ctx, "user", user)
+
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

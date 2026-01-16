@@ -189,7 +189,7 @@ func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} response.UserLogout "Logout successful"
 // @Security CookieAuth
 // @Router /logout [post]
-func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
 		Value:    "",
@@ -216,20 +216,18 @@ func (c *UserController) Logout(w http.ResponseWriter, r *http.Request) {
 func (uc *UserController) Profile(w http.ResponseWriter, r *http.Request) {
 	user, ok := r.Context().Value("user").(*entities.User)
 	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		exceptions.Unauthorized(w, "unauthorized")
 		return
 	}
 
-	response := response.UserByID{
+	resp := response.UserProfile{
 		ID:       user.ID,
 		UserName: user.UserName,
 		Email:    user.Email,
 		Role:     user.Role,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	response.OK(w, "success", resp)
 }
 
 // GetUserByEmail godoc
@@ -256,7 +254,7 @@ func (uc *UserController) GetUserByEmail(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	response := response.UserByID{
+	response := response.UserProfile{
 		ID:       user.ID,
 		UserName: user.UserName,
 		Email:    user.Email,
@@ -275,49 +273,71 @@ func (uc *UserController) GetUserByEmail(w http.ResponseWriter, r *http.Request)
 // @Produce json
 // @Param id path string true "User ULID"
 // @Param request body request.UserUpdate true "User update data"
-// @Success 200 {object} response.UserByID
+// @Success 200 {object} response.UserProfile
 // @Failure 400 {string} string "ID is required"
 // @Failure 400 {string} string "Cannot Parse String to ULID"
 // @Failure 500 {string} string "Error updating user"
 // @Security CookieAuth
 // @Router /profile [put]
 func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	userIdStr := chi.URLParam(r, "id")
+	userIdStr := r.URL.Query().Get("userId")
 	if userIdStr == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need to provide user Id", userIdStr)
 		return
 	}
 
 	userId, err := pkg.ParseULID(userIdStr)
 	if err != nil {
-		http.Error(w, "Cannot Parse String to ULID", http.StatusBadRequest)
+		exceptions.BadRequest(w, err, "Cannot parse Id of user", userId)
 		return
 	}
 
-	var dto request.UserUpdate
-	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	var userDTO request.UserUpdate
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&userDTO); err != nil {
+		exceptions.BadRequest(w, err, "Cannot Decode Body", nil)
+		return
+	}
+
+	if dec.More() {
+		exceptions.BadRequest(w, errors.New("Request Error"), "Multiple JSON values not allowed", &userDTO)
+		return
+	}
+
+	contextUser, ok := r.Context().Value("user").(*entities.User)
+	if !ok {
+		exceptions.Unauthorized(w, "unauthorized")
+		return
+	}
+
+	if contextUser.ID != userId {
+		exceptions.Unauthorized(w, "Cannot update other user")
+		return
+	}
+
+	// Meio inutil, estou a procurar uma utilidade para isso, mas vou encontrar...
+	existingUser, err := uc.service.GetUserByID(userId)
+	if err != nil {
+		exceptions.NotFound(w, err, "This user Does not exists")
 		return
 	}
 
 	user := entities.User{
-		ID:       userId,
-		UserName: dto.UserName,
-		Email:    dto.Email,
-		Role:     dto.Role,
+		ID:       existingUser.ID,
+		UserName: userDTO.UserName,
+		Email:    existingUser.Email,
+		Role:     existingUser.Role,
 	}
 
-	if err := uc.service.UpdateUser(&user); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	err = uc.service.UpdateUser(&user)
+	if err != nil {
+		reqId := middleware.GetReqID((r.Context()))
+		exceptions.InternalError(w, err, "Cannot update this user", reqId)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response.UserByID{
-		ID:       userId,
-		UserName: user.UserName,
-		Email:    user.Email,
-	})
+	response.OK(w, "User updated with success", "")
 }
 
 // DeleteUser godoc
@@ -345,7 +365,7 @@ func (uc *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response.UserByID{
+	json.NewEncoder(w).Encode(response.UserProfile{
 		ID:       userId,
 		UserName: "",
 		Email:    "",
