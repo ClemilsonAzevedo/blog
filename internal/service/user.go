@@ -43,7 +43,3 @@ func (s *UserService) GetUserByName(name string) (*entities.User, error) {
 func (s *UserService) GetAllUsers() ([]*entities.User, error) {
 	return s.userRepository.GetAllUsers()
 }
-
-func (s *UserService) GetUsersByRole(role string) ([]*entities.User, error) {
-	return s.userRepository.GetUsersByRole(role)
-}

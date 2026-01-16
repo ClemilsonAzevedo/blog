@@ -19,6 +19,16 @@ func NewCommentRepository(db *gorm.DB) *CommentRepository {
 }
 
 func (cr *CommentRepository) CreateComment(comment *Comment) error {
+	var existingPost entities.Post
+	if err := cr.DB.
+		Where("id = ?", comment.PostID.String()).
+		First(&existingPost).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return gorm.ErrRecordNotFound
+		}
+		return err
+	}
+
 	return cr.DB.Create(comment).Error
 }
 

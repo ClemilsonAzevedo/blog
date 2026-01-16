@@ -285,16 +285,10 @@
                   "type": "noauth"
                 },
                 "method": "POST",
-                "header": [
-                  {
-                    "key": "Cookie",
-                    "value": "token",
-                    "type": "text"
-                  }
-                ],
+                "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"content\":\"Conteudo do Comentário\",\n    \"user_id\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\",\n    \"post_id\" : \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}",
+                  "raw": "{\n    \"content\":\"Esse post é uma completa merda, deleta isso!!!\",\n    \"userId\": \"01KF2VVMQW99CT55DDD07VT355\",\n    \"postId\" : \"01KEXFFECJZ1BCYYT7HM7TN2QC\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -308,6 +302,34 @@
                   ],
                   "path": [
                     "comments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete comment",
+              "id": "9bd80f26-adaf-479c-9757-6ce0b0a5cf37",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL_V1}}/comments?commentId=01KF2VWJWAKM0143JGNRFACCHN",
+                  "host": [
+                    "{{BASE_URL_V1}}"
+                  ],
+                  "path": [
+                    "comments"
+                  ],
+                  "query": [
+                    {
+                      "key": "commentId",
+                      "value": "01KF2VWJWAKM0143JGNRFACCHN",
+                      "uuid": "10022ff4-cce4-4783-8628-d2a8f79458c6"
+                    }
                   ]
                 }
               },

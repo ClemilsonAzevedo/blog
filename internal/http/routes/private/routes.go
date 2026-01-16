@@ -26,6 +26,7 @@ func BindPrivateRoutes(
 
 		// Comments
 		r.Post("/comments", cc.CreateComment)
+		r.Delete("/comments", cc.DeleteComment)
 
 		// Author Role
 		r.Group(func(a chi.Router) {

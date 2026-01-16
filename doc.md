@@ -38,3 +38,4 @@
 - [ ] Verificar cookie do Author com permissoes
 - [ ] Separar AcessToken de Refresh Token
 - [ ] Adicionar campo link no na entidade post
+- [ ] Criar uma funcao utilitaria para decodificar o json

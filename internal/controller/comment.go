@@ -12,7 +12,6 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/dto/response"
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/clemilsonazevedo/blog/pkg"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"gorm.io/gorm"
 )
@@ -40,35 +39,62 @@ func NewCommentController(service *service.CommentService) *CommentController {
 // @Security CookieAuth
 // @Router /comment [post]
 func (cc *CommentController) CreateComment(w http.ResponseWriter, r *http.Request) {
-	var dto request.CommentCreate
-	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	var data request.CommentCreate
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&data); err != nil {
+		exceptions.BadRequest(w, err, "Cannot Decode Body", nil)
 		return
 	}
 
-	if dto.Content == "" || dto.UserID.String() == "" || dto.PostID.String() == "" {
-		http.Error(w, "You need to provide all comments data", http.StatusBadRequest)
+	if dec.More() {
+		exceptions.BadRequest(w, errors.New("Multiple JSON values not allowed"), "multiple JSON values not allowed", nil)
+		return
+	}
+
+	if data.Content == "" || data.UserID.String() == "" || data.PostID.String() == "" {
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need to provide all comments data", &data)
+		return
+	}
+
+	contextUser, ok := r.Context().Value("user").(*entities.User)
+	if !ok {
+		exceptions.Unauthorized(w, "unauthorized")
+		return
+	}
+
+	//Fica aqui até descobrir uma forma melhor de fazer isso
+	if contextUser.ID != data.UserID {
+		exceptions.Unauthorized(w, "User Does not exists")
 		return
 	}
 
 	commentId, err := pkg.NewULID()
 	if err != nil {
-		http.Error(w, "Cannot Generate ULID to this Comment", http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot Generate ULID to this Comment", reqId)
 		return
 	}
 
 	Comment := entities.Comment{
 		ID:      commentId,
-		Content: dto.Content,
-		UserID:  dto.UserID,
-		PostID:  dto.PostID,
+		Content: data.Content,
+		UserID:  data.UserID,
+		PostID:  data.PostID,
 	}
 
 	if err := cc.service.CreateComment(&Comment); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			exceptions.BadRequest(w, err, "This post does not exists", data.PostID)
+			return
+		}
+
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot create comment to this post", reqId)
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
+
+	response.CreatedComment(w, commentId)
 }
 
 // GetCommentByPostID godoc
@@ -131,22 +157,36 @@ func (cc *CommentController) GetCommentsByPostID(w http.ResponseWriter, r *http.
 // @Security CookieAuth
 // @Router /comment/{id} [delete]
 func (cc *CommentController) DeleteComment(w http.ResponseWriter, r *http.Request) {
-	commentIdStr := chi.URLParam(r, "id")
+	// Trocar para pegar o user ID e comment Id do body para poder verificar se o usuario que criou é o que está a tentar deletar | e permitir o autor deletar qualquer comentario
+	commentIdStr := r.URL.Query().Get("commentId")
 	if commentIdStr == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need Provide Comment Id on route", commentIdStr)
 		return
 	}
 
 	commentId, err := pkg.ParseULID(commentIdStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		exceptions.BadRequest(w, err, "Cannot Parse Comment Id", commentId)
 		return
 	}
 
-	if err := cc.service.DeleteComment(commentId); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	comment, err := cc.service.GetCommentByID(commentId)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			exceptions.NotFound(w, err, "Comment Does not exists")
+			return
+		}
+
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot get comment", reqId)
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	if err := cc.service.DeleteComment(comment.ID); err != nil {
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot Delete comment", reqId)
+		return
+	}
+
+	response.DeletedComment(w, comment.ID)
 }

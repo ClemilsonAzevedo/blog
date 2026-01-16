@@ -7,6 +7,18 @@ import (
 	"github.com/clemilsonazevedo/blog/pkg"
 )
 
+type CreatedCommentResponse struct {
+	Message   string    `json:"message"`
+	CommentId pkg.ULID  `json:"comment_id"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
+type DeletedCommentResponse struct {
+	Message   string    `json:"message"`
+	CommentId pkg.ULID  `json:"comment_id"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
 type CommentResponse struct {
 	ID        pkg.ULID  `json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
 	UserID    pkg.ULID  `json:"user_id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
@@ -21,10 +33,21 @@ type ShowCommentResponse struct {
 }
 
 func ShowComments(w http.ResponseWriter, commentsObj any) {
-	resp := ShowCommentResponse{
-		Data:      commentsObj,
-		Timestamp: time.Now().UTC(),
-	}
+	OK(w, "success", commentsObj)
+}
 
-	OK(w, "success", resp)
+func CreatedComment(w http.ResponseWriter, commentId pkg.ULID) {
+	WriteJSON(w, http.StatusCreated, CreatedCommentResponse{
+		Message:   "Comment created successfully",
+		CommentId: commentId,
+		Timestamp: time.Now().UTC(),
+	})
+}
+
+func DeletedComment(w http.ResponseWriter, commentId pkg.ULID) {
+	WriteJSON(w, http.StatusOK, DeletedCommentResponse{
+		Message:   "Comment deleted successfully",
+		CommentId: commentId,
+		Timestamp: time.Now().UTC(),
+	})
 }

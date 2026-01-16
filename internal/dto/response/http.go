@@ -3,11 +3,13 @@ package response
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 type SuccessResponse[T any] struct {
-	Message string `json:"message"`
-	Data    T      `json:"data,omitempty"`
+	Message   string    `json:"message"`
+	Data      T         `json:"data,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 func WriteJSON(w http.ResponseWriter, status int, payload any) {
@@ -18,7 +20,8 @@ func WriteJSON(w http.ResponseWriter, status int, payload any) {
 
 func OK[T any](w http.ResponseWriter, message string, data T) {
 	WriteJSON(w, http.StatusOK, SuccessResponse[T]{
-		Message: message,
-		Data:    data,
+		Message:   message,
+		Data:      data,
+		Timestamp: time.Now().UTC(),
 	})
 }
