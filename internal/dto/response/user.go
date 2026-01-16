@@ -30,6 +30,10 @@ type UserProfile struct {
 	Role     enums.Role `json:"role" binding:"required,oneof=anonymous reader author" swaggertype:"string" enums:"anonymous,reader,author"`
 }
 
+type UserDeleted struct {
+	ID pkg.ULID `json:"id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
+}
+
 func CreatedUser(w http.ResponseWriter, userID string) {
 	WriteJSON(w, http.StatusCreated, UserResponse{
 		Message:   "user created successfully",

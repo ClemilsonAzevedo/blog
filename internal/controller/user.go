@@ -15,7 +15,6 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/clemilsonazevedo/blog/pkg"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
@@ -352,22 +351,50 @@ func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Security CookieAuth
 // @Router /profile [delete]
 func (uc *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	userIdStr := chi.URLParam(r, "id")
+	userIdStr := r.URL.Query().Get("userId")
 	if userIdStr == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need to provide user Id", userIdStr)
 		return
 	}
 
 	userId, err := pkg.ParseULID(userIdStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		exceptions.BadRequest(w, err, "Cannot parse Id of user", userId)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response.UserProfile{
-		ID:       userId,
-		UserName: "",
-		Email:    "",
+	existingUser, err := uc.service.GetUserByID(userId)
+	if err != nil {
+		exceptions.NotFound(w, err, "This user Does not exists")
+		return
+	}
+
+	contextUser, ok := r.Context().Value("user").(*entities.User)
+	if !ok {
+		exceptions.Unauthorized(w, "unauthorized")
+		return
+	}
+
+	if contextUser.ID != existingUser.ID {
+		exceptions.Unauthorized(w, "Cannot delete other user")
+		return
+	}
+
+	if err = uc.service.DeleteUser(userId); err != nil {
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot delete other user", reqId)
+		return
+	}
+
+	response.OK(w, "User Deleted With Success", response.UserDeleted{
+		ID: userId,
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		MaxAge:   -1,
 	})
 }

@@ -407,7 +407,7 @@
                     {
                       "key": "userId",
                       "value": "01KEWQR67VY3KSVJNTK0WWEB1Q",
-                      "uuid": "b82b162a-974a-474f-a574-b572d2d336ca"
+                      "uuid": "0dd185f0-f8b0-4057-be74-b3110edea2c1"
                     }
                   ]
                 }
@@ -424,13 +424,19 @@
                 "method": "DELETE",
                 "header": [],
                 "url": {
-                  "raw": "{{BASE_URL_V1}}/profiles/01KEJ2SG4DSF2XHFKPV4N5CBS1",
+                  "raw": "{{BASE_URL_V1}}/profiles?userId=01KF2PNZHT89T2X0G3DMNE4PVQ",
                   "host": [
                     "{{BASE_URL_V1}}"
                   ],
                   "path": [
-                    "profiles",
-                    "01KEJ2SG4DSF2XHFKPV4N5CBS1"
+                    "profiles"
+                  ],
+                  "query": [
+                    {
+                      "key": "userId",
+                      "value": "01KF2PNZHT89T2X0G3DMNE4PVQ",
+                      "uuid": "78fae958-8f57-4090-888d-2f3295298230"
+                    }
                   ]
                 }
               },
