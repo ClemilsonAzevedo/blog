@@ -42,37 +42,69 @@ func NewPostController(service *service.PostService) *PostController {
 // @Security CookieAuth
 // @Router /post [post]
 func (pc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
-	var dto request.PostCreate
-	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	var postDTO request.PostCreate
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&postDTO); err != nil {
+		exceptions.BadRequest(w, err, "Cannot Decode Body", nil)
 		return
 	}
 
-	if dto.Content == "" || dto.Title == "" {
-		http.Error(w, "You need set Content and AuthorId to create a post", http.StatusBadRequest)
+	if dec.More() {
+		exceptions.BadRequest(w, errors.New("Request Error"), "Multiple JSON values not allowed", &postDTO)
+		return
+	}
+
+	authorId, err := pkg.ParseULID(postDTO.AuthorId.String())
+	if err != nil {
+		exceptions.BadRequest(w, errors.New("Request Error"), "Cannot parse Author ID", &postDTO)
+	}
+
+	contextUser, ok := r.Context().Value("user").(*entities.User)
+	if !ok {
+		exceptions.Unauthorized(w, "unauthorized")
+		return
+	}
+
+	if contextUser.ID != authorId {
+		exceptions.Unauthorized(w, "Cannot create post with other author id")
+		return
+	}
+
+	if postDTO.AuthorId.String() == "" || postDTO.Content == "" || postDTO.Title == "" {
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need set all params to create a post", postDTO)
 		return
 	}
 
 	postId, err := pkg.NewULID()
 	if err != nil {
-		http.Error(w, "Cannot Generate ULID to this Post", http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot Generate ULID to this Post", reqId)
+		return
+	}
+
+	slug, err := pc.service.GenerateUniqueSlug(postDTO.Title)
+	if err != nil {
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot Generate Slug to this Post", reqId)
 		return
 	}
 
 	Post := entities.Post{
 		ID:       postId,
-		Title:    dto.Title,
-		Content:  dto.Content,
-		Likes:    dto.Likes,
-		Dislikes: dto.Dislikes,
-		AuthorId: dto.AuthorId,
+		Title:    postDTO.Title,
+		Slug:     slug,
+		Content:  postDTO.Content,
+		AuthorId: authorId,
 	}
+
 	if err := pc.service.CreatePost(&Post); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot create Post", reqId)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	response.CreatedPost(w, postId, authorId)
 }
 
 // CreatePostWithAi godoc

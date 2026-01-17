@@ -31,8 +31,8 @@ func BindPrivateRoutes(
 		// Author Role
 		r.Group(func(a chi.Router) {
 			a.Use(middlewares.RequireAuthorRole(us))
-			a.Post("/posts-with-ai", pc.CreatePostWithAi)
 			a.Post("/posts", pc.CreatePost)
+			a.Post("/posts/suggest", pc.CreatePostWithAi)
 			a.Put("/posts/{id}", pc.UpdatePost)
 			a.Delete("/posts/{id}", pc.DeletePost)
 		})

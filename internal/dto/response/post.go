@@ -21,6 +21,13 @@ type PostResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type CreatedPostResponse struct {
+	Message   string    `json:"message"`
+	PostId    pkg.ULID  `json:"post_id"`
+	AuthorId  pkg.ULID  `json:"author_id"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
 type MetaInfo struct {
 	Page       int `json:"page"`
 	Limit      int `json:"limit"`
@@ -66,4 +73,13 @@ func ListPosts(w http.ResponseWriter, postsObj any, page, limit, total int) {
 
 func ShowPost(w http.ResponseWriter, postsObj any) {
 	OK(w, "success", postsObj)
+}
+
+func CreatedPost(w http.ResponseWriter, postId pkg.ULID, authorId pkg.ULID) {
+	WriteJSON(w, http.StatusCreated, CreatedPostResponse{
+		Message:   "Post created successfully",
+		PostId:    postId,
+		AuthorId:  authorId,
+		Timestamp: time.Now().UTC(),
+	})
 }

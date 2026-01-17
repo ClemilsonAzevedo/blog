@@ -25,13 +25,6 @@ func NewPostService(PostRepository *PostRepository, postCache *cache.PostCache) 
 }
 
 func (s *PostService) CreatePost(post *Post) error {
-	slug, err := s.GenerateUniqueSlug(post.Title)
-
-	if err != nil {
-		return err
-	}
-	post.Slug = slug
-
 	if err := s.PostRepository.CreatePost(post); err != nil {
 		return err
 	}

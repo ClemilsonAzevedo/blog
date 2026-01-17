@@ -28,6 +28,7 @@
 - [x] Criar collection de todas as rotas no Postman
 - [x] Error Handling
 - [ ] Corrigir Rotas
+- [ ] Corrigir Os Middlewares
 - [ ] Verificar se o Post existe ao buscar post por id
 - [ ] Verificar se o Post existe ao buscar commentario por id do post
 - [ ] Testar e corrigir todas as rotas apos a troca do UUID por ULID
@@ -39,3 +40,4 @@
 - [ ] Separar AcessToken de Refresh Token
 - [ ] Adicionar campo link no na entidade post
 - [ ] Criar uma funcao utilitaria para decodificar o json
+- [ ] Adicionar Hashtags nos tipos de post
