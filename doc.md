@@ -9,6 +9,9 @@
 - [X] Criar rota de logout
 - [X] Criar sistema de cache dos posts
 - [x] Criar documentacao da API com Swagger
+- [X] Corrigir Os Middlewares
+- [ ] Adicionar campo link no entidade post
+- [ ] Adicionar Hashtags nos tipos de post
 
 
 ## Clema
@@ -32,9 +35,6 @@
 - [x] Verificar se o Post existe ao buscar commentario por id do post
 - [x] Testar e corrigir todas as rotas apos a troca do UUID por ULID
 - [ ] Fazer feature de criar um post com apenas um link
-- [ ] Corrigir Os Middlewares
-  - [ ] Gerar resumo, titulo e hashtags e postar colocando o link no fim
+- [ ] Gerar resumo, titulo e hashtags e postar colocando o link no fim
 - [ ] Mandar email de confirmacao do usuario
 - [ ] Verificar cookie do Author com permissoes
-- [ ] Adicionar campo link no na entidade post
-- [ ] Adicionar Hashtags nos tipos de post
