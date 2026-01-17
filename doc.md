@@ -27,17 +27,14 @@
 - [x] Fazer verificação de campos vazios nas rotas/controllers
 - [x] Criar collection de todas as rotas no Postman
 - [x] Error Handling
-- [ ] Corrigir Rotas
-- [ ] Corrigir Os Middlewares
-- [ ] Verificar se o Post existe ao buscar post por id
-- [ ] Verificar se o Post existe ao buscar commentario por id do post
-- [ ] Testar e corrigir todas as rotas apos a troca do UUID por ULID
+- [x] Corrigir Rotas
+- [x] Verificar se o Post existe ao buscar post por id
+- [x] Verificar se o Post existe ao buscar commentario por id do post
+- [x] Testar e corrigir todas as rotas apos a troca do UUID por ULID
 - [ ] Fazer feature de criar um post com apenas um link
+- [ ] Corrigir Os Middlewares
   - [ ] Gerar resumo, titulo e hashtags e postar colocando o link no fim
-- [ ] Fazer rota de GetUsers não retornar password
 - [ ] Mandar email de confirmacao do usuario
 - [ ] Verificar cookie do Author com permissoes
-- [ ] Separar AcessToken de Refresh Token
 - [ ] Adicionar campo link no na entidade post
-- [ ] Criar uma funcao utilitaria para decodificar o json
 - [ ] Adicionar Hashtags nos tipos de post
