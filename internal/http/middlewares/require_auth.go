@@ -2,8 +2,10 @@ package middlewares
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
+	"github.com/clemilsonazevedo/blog/internal/domain/exceptions"
 	"github.com/clemilsonazevedo/blog/internal/http/auth"
 	"github.com/clemilsonazevedo/blog/internal/service"
 )
@@ -16,30 +18,30 @@ func RequireAuth(us *service.UserService) func(http.Handler) http.Handler {
 			tokenStr := ""
 			cookie, err := r.Cookie("token")
 			if err != nil {
-				http.Error(w, "This route is missing a token!", http.StatusUnauthorized)
+				exceptions.Unauthorized(w, "Token is missing!")
 				return
 			}
 
 			tokenStr = cookie.Value
 			if tokenStr == "" {
-				http.Error(w, "This route is missing a token!", http.StatusUnauthorized)
+				exceptions.BadRequest(w, errors.New("Request Error"), "The token is empty.", nil)
 				return
 			}
 
 			_, claim, err := auth.ValidateJWT(tokenStr)
 			if err != nil {
-				http.Error(w, "This token is invalid!", http.StatusUnauthorized)
+				exceptions.BadRequest(w, errors.New("Request Error"), "The token is invalid.", nil)
 				return
 			}
 
 			email, _ := claim["Email"].(string)
 			if email == "" {
-				http.Error(w, "This token is invalid!", http.StatusUnauthorized)
+				exceptions.Unauthorized(w, "Unauthorized account.")
 			}
 
 			user, err := us.GetUserByEmail(email)
 			if err != nil {
-				http.Error(w, "User not found!", http.StatusNotFound)
+				exceptions.BadRequest(w, errors.New("Request Error"), "User not found.", nil)
 				return
 			}
 
