@@ -34,7 +34,7 @@ func BindPrivateRoutes(
 			a.Post("/posts", pc.CreatePost)
 			a.Post("/posts/suggest", pc.CreatePostWithAi)
 			a.Put("/posts", pc.UpdatePost)
-			a.Delete("/posts/{id}", pc.DeletePost)
+			a.Delete("/posts", pc.DeletePost)
 		})
 	})
 }

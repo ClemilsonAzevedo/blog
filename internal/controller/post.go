@@ -14,7 +14,6 @@ import (
 	"github.com/clemilsonazevedo/blog/internal/service"
 	"github.com/clemilsonazevedo/blog/pkg"
 	"github.com/clemilsonazevedo/blog/tools"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"gorm.io/gorm"
 )
@@ -410,23 +409,36 @@ func (pc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {string} string "Error deleting post"
 // @Security CookieAuth
 // @Router /post/{id} [delete]
-func (uc *PostController) DeletePost(w http.ResponseWriter, r *http.Request) {
-	postIdStr := chi.URLParam(r, "id")
+func (pc *PostController) DeletePost(w http.ResponseWriter, r *http.Request) {
+	postIdStr := r.URL.Query().Get("postId")
 	if postIdStr == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need Provide Post Id on route", postIdStr)
 		return
 	}
 
 	postId, err := pkg.ParseULID(postIdStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		exceptions.BadRequest(w, err, "Cannot Parse Comment Id", postId)
 		return
 	}
 
-	if err := uc.service.DeletePost(postId); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	existingPost, err := pc.service.GetPostByID(postId)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			exceptions.NotFound(w, err, "Post Does not exists")
+			return
+		}
+
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot get post", reqId)
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	if err := pc.service.DeletePost(existingPost.ID); err != nil {
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot delete this post", reqId)
+		return
+	}
+
+	response.DeletedPost(w, existingPost.ID)
 }

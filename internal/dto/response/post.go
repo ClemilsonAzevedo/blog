@@ -28,6 +28,12 @@ type CreatedPostResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+type DeletedPostResponse struct {
+	Message   string    `json:"message"`
+	PostId    pkg.ULID  `json:"post_id"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
 type MetaInfo struct {
 	Page       int `json:"page"`
 	Limit      int `json:"limit"`
@@ -80,6 +86,14 @@ func CreatedPost(w http.ResponseWriter, postId pkg.ULID, authorId pkg.ULID) {
 		Message:   "Post created successfully",
 		PostId:    postId,
 		AuthorId:  authorId,
+		Timestamp: time.Now().UTC(),
+	})
+}
+
+func DeletedPost(w http.ResponseWriter, postId pkg.ULID) {
+	WriteJSON(w, http.StatusOK, DeletedPostResponse{
+		Message:   "Post deleted successfully",
+		PostId:    postId,
 		Timestamp: time.Now().UTC(),
 	})
 }
