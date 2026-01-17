@@ -20,7 +20,15 @@ func (pr *PostRepository) CreatePost(Post *entities.Post) error {
 }
 
 func (pr *PostRepository) UpdatePost(Post *entities.Post) error {
-	return pr.DB.Save(Post).Error
+	err := pr.DB.
+		Model(&Post).
+		Select("title", "content", "slug").
+		Updates(entities.Post{Title: Post.Title, Content: Post.Content, Slug: Post.Slug}).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (pr *PostRepository) DeletePost(id pkg.ULID) error {

@@ -18,30 +18,30 @@ func NewCommentService(commentRepository *repository.CommentRepository) *Comment
 	}
 }
 
-func (s *CommentService) CreateComment(comment *Comment) error {
-	return s.CommentRepository.CreateComment(comment)
+func (cs *CommentService) CreateComment(comment *Comment) error {
+	return cs.CommentRepository.CreateComment(comment)
 }
 
-func (s *CommentService) UpdateComment(comment *Comment) error {
-	return s.CommentRepository.UpdateComment(comment)
+func (cs *CommentService) UpdateComment(comment *Comment) error {
+	return cs.CommentRepository.UpdateComment(comment)
 }
 
-func (s *CommentService) DeleteComment(id pkg.ULID) error {
-	return s.CommentRepository.DeleteComment(id)
+func (cs *CommentService) DeleteComment(id pkg.ULID) error {
+	return cs.CommentRepository.DeleteComment(id)
 }
 
-func (s *CommentService) GetCommentByID(id pkg.ULID) (*Comment, error) {
-	return s.CommentRepository.GetCommentByID(id)
+func (cs *CommentService) GetCommentByID(id pkg.ULID) (*Comment, error) {
+	return cs.CommentRepository.GetCommentByID(id)
 }
 
-func (s *CommentService) GetAllComments() ([]*Comment, error) {
-	return s.CommentRepository.GetAllComments()
+func (cs *CommentService) GetAllComments() ([]*Comment, error) {
+	return cs.CommentRepository.GetAllComments()
 }
 
-func (s *CommentService) GetCommentsByPostID(postID pkg.ULID) ([]*Comment, error) {
-	return s.CommentRepository.GetCommentsByPostID(postID)
+func (cs *CommentService) GetCommentsByPostID(postID pkg.ULID) ([]*Comment, error) {
+	return cs.CommentRepository.GetCommentsByPostID(postID)
 }
 
-func (s *CommentService) GetCommentsByUserID(userID pkg.ULID) ([]*Comment, error) {
-	return s.CommentRepository.GetCommentsByUserID(userID)
+func (cs *CommentService) GetCommentsByUserID(userID pkg.ULID) ([]*Comment, error) {
+	return cs.CommentRepository.GetCommentsByUserID(userID)
 }

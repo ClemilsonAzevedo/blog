@@ -120,38 +120,71 @@ func (pc *PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
 // @Security CookieAuth
 // @Router /post-with-ai [post]
 func (pc *PostController) CreatePostWithAi(w http.ResponseWriter, r *http.Request) {
-	var dto request.AiPostCreate
-	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	var aiPostDTO request.AiPostCreate
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&aiPostDTO); err != nil {
+		exceptions.BadRequest(w, err, "Cannot Decode Body", nil)
 		return
 	}
 
-	if dto.Content == "" {
-		http.Error(w, "You need set Content and AuthorId to create a post", http.StatusBadRequest)
+	if dec.More() {
+		exceptions.BadRequest(w, errors.New("Request Error"), "Multiple JSON values not allowed", &aiPostDTO)
 		return
 	}
 
-	aiRes := tools.GeneratePropsOfContent(dto.Content)
+	authorId, err := pkg.ParseULID(aiPostDTO.AuthorId.String())
+	if err != nil {
+		exceptions.BadRequest(w, errors.New("Request Error"), "Cannot parse Author ID", &aiPostDTO)
+	}
+
+	contextUser, ok := r.Context().Value("user").(*entities.User)
+	if !ok {
+		exceptions.Unauthorized(w, "unauthorized")
+		return
+	}
+
+	if contextUser.ID != authorId {
+		exceptions.Unauthorized(w, "Cannot create post with other author id")
+		return
+	}
+
+	if aiPostDTO.AuthorId.String() == "" || aiPostDTO.Content == "" {
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need set all params to create a post", aiPostDTO)
+		return
+	}
 
 	aiPostId, err := pkg.NewULID()
 	if err != nil {
-		http.Error(w, "Cannot Generate ULID to this Post", http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot Generate ULID to this Post", reqId)
+		return
+	}
+
+	aiRes := tools.GeneratePropsOfContent(aiPostDTO.Content)
+
+	slug, err := pc.service.GenerateUniqueSlug(aiRes.Title)
+	if err != nil {
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot Generate Slug to this Post", reqId)
 		return
 	}
 
 	Post := entities.Post{
 		ID:       aiPostId,
 		Title:    aiRes.Title,
-		Content:  pkg.GeneratePostContent(dto.Content, aiRes.Hashtags),
-		AuthorId: dto.AuthorId,
+		Slug:     slug,
+		Content:  pkg.GeneratePostContent(aiPostDTO.Content, aiRes.Hashtags),
+		AuthorId: authorId,
 	}
 
 	if err := pc.service.CreatePost(&Post); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot create this post", reqId)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	response.CreatedPost(w, aiPostId, authorId)
 }
 
 // GetPostById godoc
@@ -288,53 +321,83 @@ func (c *PostController) GetPaginatedPosts(w http.ResponseWriter, r *http.Reques
 // @Failure 500 {string} string "Error updating post"
 // @Security CookieAuth
 // @Router /post/{id} [put]
-func (uc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
-	postIdStr := chi.URLParam(r, "id")
+func (pc *PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
+	postIdStr := r.URL.Query().Get("postId")
 	if postIdStr == "" {
-		http.Error(w, "ID is required", http.StatusBadRequest)
+		exceptions.BadRequest(w, errors.New("Request Error"), "You need Provide Post Id on route", postIdStr)
 		return
 	}
 
 	postId, err := pkg.ParseULID(postIdStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		exceptions.BadRequest(w, err, "Cannot Parse Comment Id", postId)
 		return
 	}
 
-	var dto request.PostUpdate
-	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	post, err := uc.service.GetPostByID(postId)
+	existingPost, err := pc.service.GetPostByID(postId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err == gorm.ErrRecordNotFound {
+			exceptions.NotFound(w, err, "Post Does not exists")
+			return
+		}
+
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot get post", reqId)
 		return
 	}
 
-	post.Content = dto.Content
-	post.Likes = dto.Likes
-	post.Title = dto.Title
-	post.Dislikes = dto.Dislikes
-
-	if err := uc.service.UpdatePost(post); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	var updatePostDTO request.PostUpdate
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&updatePostDTO); err != nil {
+		exceptions.BadRequest(w, err, "Cannot Decode Body", nil)
 		return
 	}
 
-	response := response.PostResponse{
-		ID:       post.ID,
-		AuthorId: post.AuthorId,
-		Title:    post.Title,
-		Content:  post.Content,
-		Likes:    post.Likes,
-		Dislikes: post.Dislikes,
+	if dec.More() {
+		exceptions.BadRequest(w, errors.New("Request Error"), "Multiple JSON values not allowed", &updatePostDTO)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	if updatePostDTO.Title == "" {
+		updatePostDTO.Title = existingPost.Title
+	}
+
+	if len(updatePostDTO.Title) >= 1 {
+		slug, err := pc.service.GenerateUniqueSlug(updatePostDTO.Title)
+		if err != nil {
+			reqId := middleware.GetReqID(r.Context())
+			exceptions.InternalError(w, err, "Cannot Generate Slug to this Post", reqId)
+			return
+		}
+
+		existingPost.Slug = slug
+	}
+
+	if updatePostDTO.Content == "" {
+		updatePostDTO.Content = existingPost.Content
+	}
+
+	postObj := entities.Post{
+		ID:        existingPost.ID,
+		AuthorId:  existingPost.AuthorId,
+		Title:     updatePostDTO.Title,
+		Content:   updatePostDTO.Content,
+		Slug:      existingPost.Slug,
+		Author:    existingPost.Author,
+		Likes:     existingPost.Likes,
+		Views:     existingPost.Views,
+		Dislikes:  existingPost.Dislikes,
+		CreatedAt: existingPost.CreatedAt,
+	}
+
+	if err := pc.service.UpdatePost(&postObj); err != nil {
+		reqId := middleware.GetReqID(r.Context())
+		exceptions.InternalError(w, err, "Cannot update this post", reqId)
+		return
+	}
+
+	response.OK(w, "Comment updated with success", postObj)
 }
 
 // DeletePost godoc

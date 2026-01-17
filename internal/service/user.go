@@ -16,30 +16,30 @@ func NewUserService(userRepository *repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) CreateUser(user *entities.User) error {
-	return s.userRepository.CreateUser(user)
+func (us *UserService) CreateUser(user *entities.User) error {
+	return us.userRepository.CreateUser(user)
 }
 
-func (s *UserService) UpdateUser(user *entities.User) error {
-	return s.userRepository.UpdateUser(user)
+func (us *UserService) UpdateUser(user *entities.User) error {
+	return us.userRepository.UpdateUser(user)
 }
 
-func (s *UserService) DeleteUser(id pkg.ULID) error {
-	return s.userRepository.DeleteUser(id)
+func (us *UserService) DeleteUser(id pkg.ULID) error {
+	return us.userRepository.DeleteUser(id)
 }
 
-func (s *UserService) GetUserByID(id pkg.ULID) (*entities.User, error) {
-	return s.userRepository.GetUserByID(id)
+func (us *UserService) GetUserByID(id pkg.ULID) (*entities.User, error) {
+	return us.userRepository.GetUserByID(id)
 }
 
-func (s *UserService) GetUserByEmail(email string) (*entities.User, error) {
-	return s.userRepository.GetUserByEmail(email)
+func (us *UserService) GetUserByEmail(email string) (*entities.User, error) {
+	return us.userRepository.GetUserByEmail(email)
 }
 
-func (s *UserService) GetUserByName(name string) (*entities.User, error) {
-	return s.userRepository.GetUserByName(name)
+func (us *UserService) GetUserByName(name string) (*entities.User, error) {
+	return us.userRepository.GetUserByName(name)
 }
 
-func (s *UserService) GetAllUsers() ([]*entities.User, error) {
-	return s.userRepository.GetAllUsers()
+func (us *UserService) GetAllUsers() ([]*entities.User, error) {
+	return us.userRepository.GetAllUsers()
 }

@@ -336,7 +336,7 @@ func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.OK(w, "User updated with success", "")
+	response.OK(w, "User updated with success", user)
 }
 
 // DeleteUser godoc

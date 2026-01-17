@@ -20,7 +20,7 @@ type Post struct {
 	CreatedAt time.Time `gorm:"column:created_at;not null;autoCreateTime" json:"created_at"`
 
 	AuthorId pkg.ULID `gorm:"column:author_id;type:varchar(26);index;not null" json:"author_id" swaggertype:"string" example:"01ARZ3NDEKTSV4RRFFQ69G5FAV"`
-	Author   User     `gorm:"foreignKey:AuthorID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT" json:"author,omitempty"`
+	Author   User     `gorm:"foreignKey:AuthorID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT" json:"-"`
 }
 
 func (Post) TableName() string {

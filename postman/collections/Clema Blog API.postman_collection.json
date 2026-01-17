@@ -525,7 +525,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"content\": \"Imagine you’re running an API service that suddenly gets a huge spike in traffic — maybe from a real user, maybe from a bot, or worse, a DDoS attack. Without rate limiting, your system could slow down or even crash. \\n Rate limiters are like traffic controllers; they decide how many requests can pass through in a given amount of time, ensuring stability, fairness, and protection of resources.\\n \",\n    \"author_id\": \"01KEWF42M44MTF0Q7HBGSPEEHM\"\n}",
+              "raw": "{\n    \"content\": \"Here’s what every Go tutorial teaches: goroutines are lightweight — only 2KB of stack space — so spawn them freely. An average process should have no problems with 100,000 concurrent routines, according to conventional wisdom.But here’s the data that shattered this belief: Memory Reality: While each goroutine starts at 2KB, active goroutines average 4–8KB in production due to stack growth Context Switching Overhead: Beyond 10,000 active goroutines, the Go scheduler spends more time switching between goroutines than executing actual work GC Pressure: More goroutines create more objects, triggering frequent garbage collection cycles that can pause your entire application Our production metrics revealed the breaking point: spawning goroutines 1:1 with incoming requests creates a performance cliff around 50,000 concurrent operations.\",\n    \"author_id\": \"01KEWQQZ5F2EYBMF9JNWR5VAGA\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -533,12 +533,47 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL_V1}}/posts-with-ai",
+              "raw": "{{BASE_URL_V1}}/posts/suggest",
               "host": [
                 "{{BASE_URL_V1}}"
               ],
               "path": [
-                "posts-with-ai"
+                "posts",
+                "suggest"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update post",
+          "id": "35c2540c-bf6c-4055-991b-340b95c79be2",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"content\": {{$randomLoremParagraphs}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL_V1}}/posts?postId=01KF6176E7W8W74YYVPTGC8F8B",
+              "host": [
+                "{{BASE_URL_V1}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "postId",
+                  "value": "01KF6176E7W8W74YYVPTGC8F8B",
+                  "uuid": "4b3a0ded-0de4-4b9d-8cc6-54ddfebf788e"
+                }
               ]
             }
           },
@@ -559,40 +594,6 @@
                 "type": "text"
               }
             ],
-            "url": {
-              "raw": "{{BASE_URL_V1}}/posts/01KEJ2SG4DSF2XHFKPV4N5CBS1",
-              "host": [
-                "{{BASE_URL_V1}}"
-              ],
-              "path": [
-                "posts",
-                "01KEJ2SG4DSF2XHFKPV4N5CBS1"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update post",
-          "id": "35c2540c-bf6c-4055-991b-340b95c79be2",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Cookie",
-                "value": "token",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Conteudo do post para gerar o titulo\",\n    \"content\": \"Conteudo do post para gerar o titulo\",\n    \"userId\": \"01KEJ2SG4DSF2XHFKPV4N5CBS1\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
             "url": {
               "raw": "{{BASE_URL_V1}}/posts/01KEJ2SG4DSF2XHFKPV4N5CBS1",
               "host": [
