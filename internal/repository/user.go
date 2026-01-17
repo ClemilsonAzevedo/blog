@@ -55,30 +55,3 @@ func (ur *UserRepository) GetUserByEmail(email string) (*entities.User, error) {
 
 	return &user, nil
 }
-
-func (ur *UserRepository) GetUserByName(name string) (*entities.User, error) {
-	var user entities.User
-	err := ur.DB.Where("username = ?", name).First(&user).Error
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
-}
-
-func (ur *UserRepository) GetAllUsers() ([]*entities.User, error) {
-	var users []*entities.User
-	err := ur.DB.Find(&users).Error
-	if err != nil {
-		return nil, err
-	}
-	return users, nil
-}
-
-func (ur *UserRepository) GetUsersByRole(role string) ([]*entities.User, error) {
-	var users []*entities.User
-	err := ur.DB.Where("role = ?", role).Find(&users).Error
-	if err != nil {
-		return nil, err
-	}
-	return users, nil
-}

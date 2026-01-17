@@ -35,11 +35,3 @@ func (us *UserService) GetUserByID(id pkg.ULID) (*entities.User, error) {
 func (us *UserService) GetUserByEmail(email string) (*entities.User, error) {
 	return us.userRepository.GetUserByEmail(email)
 }
-
-func (us *UserService) GetUserByName(name string) (*entities.User, error) {
-	return us.userRepository.GetUserByName(name)
-}
-
-func (us *UserService) GetAllUsers() ([]*entities.User, error) {
-	return us.userRepository.GetAllUsers()
-}

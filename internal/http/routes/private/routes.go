@@ -7,11 +7,17 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+type UserController = controller.UserController
+type PostController = controller.PostController
+type CommentController = controller.CommentController
+
+type UserService = service.UserService
+
 func BindPrivateRoutes(
-	pc *controller.PostController,
-	uc *controller.UserController,
-	cc *controller.CommentController,
-	us *service.UserService,
+	pc *PostController,
+	uc *UserController,
+	cc *CommentController,
+	us *UserService,
 	c chi.Router,
 ) {
 	c.Group(func(r chi.Router) {
