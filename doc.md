@@ -34,7 +34,7 @@
 - [x] Verificar se o Post existe ao buscar post por id
 - [x] Verificar se o Post existe ao buscar commentario por id do post
 - [x] Testar e corrigir todas as rotas apos a troca do UUID por ULID
+- [x] Verificar cookie do Author com permissoes
 - [ ] Fazer feature de criar um post com apenas um link
 - [ ] Gerar resumo, titulo e hashtags e postar colocando o link no fim
 - [ ] Mandar email de confirmacao do usuario
-- [ ] Verificar cookie do Author com permissoes
